@@ -1,14 +1,24 @@
 import React, { useState } from "react";
-import OCPLogo from '../Assets/OCP_Group.png'; 
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import OCPLogo from '../Assets/OCP_Group.png';
 import './Home.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { BsBellFill, BsChevronDown, BsChevronUp } from "react-icons/bs";
 import { FaBars } from "react-icons/fa";
-import avatar from '../Assets/pro.png'; 
+import avatar from '../Assets/pro.png';
+import L from "leaflet";
+
+const DefaultIcon = L.icon({
+    iconUrl: require('../Assets/live-location.png'), 
+    iconSize: [41, 41],
+});
+
+L.Marker.prototype.options.icon = DefaultIcon;
 
 const Home = () => {
     const [showDropdown, setShowDropdown] = useState(false);
     const [showCategories, setShowCategories] = useState(false);
+    const position = [31.7917, -7.0926]; // Coordinates for Morocco
 
     const toggleDropdown = () => {
         setShowDropdown(!showDropdown);
@@ -19,7 +29,7 @@ const Home = () => {
     };
 
     return (
-        <body>
+        <div>
             <header className="header">
                 <div className="container">
                     <div className="row">
@@ -63,7 +73,6 @@ const Home = () => {
                             </div>
                         </div>
                     </div>
-                   
                 </div>
             </header>
             <section className="hero">
@@ -74,7 +83,7 @@ const Home = () => {
                                 <div className="hero__categories__all" onClick={toggleCategories}>
                                     <FaBars className="bar-icon" />
                                     <span>Tous les Missions</span>
-                                    {<BsChevronDown className="arrowad" />}
+                                    {showCategories ? <BsChevronUp className="arrowad" /> : <BsChevronDown className="arrowad" />}
                                 </div>
                                 {showCategories && (
                                     <ul>
@@ -93,28 +102,38 @@ const Home = () => {
                                 )}
                             </div>
                         </div>
-                        <div class="col-lg-9">
-                        <div class="hero__search">
-                        <div class="hero__search__form">
-                            <form action="#">
-                                <div class="hero__search__categories">
-                                    Les Collaborateurs
-                                    <span class="arrow_carrot-down"></span>
+                        <div className="col-lg-9">
+                            <div className="hero__search">
+                                <div className="hero__search__form">
+                                    <form action="#">
+                                        <div className="hero__search__categories">
+                                            Les Collaborateurs
+                                            <span className="arrow_carrot-down"></span>
+                                        </div>
+                                        <input type="text" placeholder="Où est situé le collaborateur ?"/>
+                                        <button type="submit" className="site-btn">Recherche</button>
+                                    </form>
                                 </div>
-                                <input type="text" placeholder="Où est situé le collaborateur ?"/>
-                                <button type="submit" class="site-btn">Recherche</button>
-                            </form>
+                            </div>
+                            <div className="map">
+                                <MapContainer center={position} zoom={13} scrollWheelZoom={false}>
+                                    <TileLayer
+                                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                    />
+                                    <Marker position={position}>
+                                        <Popup>
+                                            A pretty CSS3 popup. <br /> Easily customizable.
+                                        </Popup>
+                                    </Marker>
+                                </MapContainer>
+                            </div>
                         </div>
-                       </div>
-                    <div class="map" data-setbg="">
-                        
-                    </div>
-                </div>
                     </div>
                 </div>
             </section>
-        </body>
+        </div>
     );
-}
+};
 
 export default Home;

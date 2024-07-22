@@ -460,11 +460,14 @@ hero__search__form form .hero__search__categories:after {
 	color: #6f6f6f;
 }
 .map {
-	height: 500px;
+	height: 480px;
 	display: flex;
 	align-items: center;
-	padding-left: 75px;
-    background-color: #249BC8;
+}
+
+.leaflet-container{
+	width:100%;
+	height:100%;
 }
 
 
