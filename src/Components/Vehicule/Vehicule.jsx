@@ -88,7 +88,7 @@ const Vehicule = () => {
                                 <ul>
                                     <li><a href="/Home">Home</a></li>
                                     <li><a href="#">Missions</a></li>
-                                    <li><a href="#">Collaborateurs</a></li>
+                                    <li><a href="/Collaborateur">Collaborateurs</a></li>
                                     <li className="active"><a href="/Vehicule">Vehicules</a></li>
                                 </ul>
                             </nav>
@@ -109,7 +109,7 @@ const Vehicule = () => {
                                         </a>
                                         {showDropdown && (
                                             <ul className="dropdown-menu">
-                                                <li><a href="#">Profile</a></li>
+                                                <li><a href="/Profile">Profile</a></li>
                                                 <li><a href="#">Déconnexion</a></li>
                                             </ul>
                                         )}
@@ -126,7 +126,7 @@ const Vehicule = () => {
                     <div className="row">
                         <div className="col-lg-12 text-center">
                             <div className="breadcrumb__text">
-                                <h2>OCP GROUP Vehicules</h2>
+                                <h2>Véhicules OCP GROUP</h2>
                             </div>
                         </div>
                     </div>

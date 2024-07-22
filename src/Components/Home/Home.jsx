@@ -31,9 +31,9 @@ const Home = () => {
                         <div className="col-lg-6">
                             <nav className="header__menu">
                                 <ul>
-                                    <li className="active"><a href="#">Home</a></li>
+                                    <li className="active"><a href="/Home">Home</a></li>
                                     <li><a href="#">Missions</a></li>
-                                    <li><a href="#">Collaborateurs</a></li>
+                                    <li><a href="/Collaborateur">Collaborateurs</a></li>
                                     <li><a href="/Vehicule">Vehicules</a></li>
                                 </ul>
                             </nav>
@@ -54,7 +54,7 @@ const Home = () => {
                                         </a>
                                         {showDropdown && (
                                             <ul className="dropdown-menu">
-                                                <li><a href="#">Profile</a></li>
+                                                <li><a href="/Profile">Profile</a></li>
                                                 <li><a href="#">Déconnexion</a></li>
                                             </ul>
                                         )}
