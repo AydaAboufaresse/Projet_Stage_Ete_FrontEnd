@@ -102,6 +102,6 @@
 }
 .shoping__cart__table{
     max-height: 400px; /* Adjust the height as per your design */
-    overflow-y: scroll;
+    overflow-y: auto;
     padding-right: 50px;
 }

@@ -5,6 +5,7 @@ import Home from "./Components/Home/Home";
 import Vehicule from "./Components/Vehicule/Vehicule"; 
 import Collaborateur from "./Components/Collaborateur/Collaborateur"; 
 import Profile from "./Components/Profile/profile"; 
+import Mission from "./Components/Mission/Mission"; 
 
 const App = () => (
     <Router>
@@ -14,6 +15,7 @@ const App = () => (
             <Route path="/Vehicule" element={<Vehicule />} /> 
             <Route path="/Collaborateur" element={<Collaborateur/>}/>
             <Route path="/Profile" element={<Profile/>}/>
+            <Route path="/Mission" element={<Mission/>}/>
         </Routes>
     </Router>
 );

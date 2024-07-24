@@ -42,7 +42,7 @@ const Home = () => {
                             <nav className="header__menu">
                                 <ul>
                                     <li className="active"><a href="/Home">Home</a></li>
-                                    <li><a href="#">Missions</a></li>
+                                    <li><a href="/Mission">Missions</a></li>
                                     <li><a href="/Collaborateur">Collaborateurs</a></li>
                                     <li><a href="/Vehicule">Vehicules</a></li>
                                 </ul>

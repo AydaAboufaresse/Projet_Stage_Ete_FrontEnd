@@ -81,7 +81,7 @@ const Collaborateur = () => {
                             <nav className="header__menu">
                                 <ul>
                                     <li><a href="/Home">Home</a></li>
-                                    <li><a href="#">Missions</a></li>
+                                    <li><a href="/Mission">Missions</a></li>
                                     <li className="active"><a href="/Collaborateur">Collaborateurs</a></li>
                                     <li><a href="/Vehicule">Vehicules</a></li>
                                 </ul>
@@ -354,7 +354,7 @@ const Collaborateur = () => {
                             </div>
                             <div className="modal-footer">
                                 <button type="button" className="btn btn-secondary" onClick={() => setShowUpdatePopup(false)}>Fermer</button>
-                                <button type="button" className="btn btn-primary custom-btn-primary" style={{ backgroundColor: '#7fad39' }} onClick={handleUpdate}>Enregistrer</button>
+                                <button type="button" className="btn btn-primary custom-btn-primary" style={{ backgroundColor: '#7fad39' }} onClick={handleUpdate}>Mettre à jour</button>
                             </div>
                         </div>
                     </div>
