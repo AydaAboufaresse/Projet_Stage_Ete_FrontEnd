@@ -1,31 +1,191 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import OCPLogo from '../Assets/OCP_Group.png';
 import './Collaborateur.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { BsBellFill, BsChevronDown } from "react-icons/bs";
 import { FaTrashAlt, FaRegEdit } from "react-icons/fa";
-
+import { BASEURL, getAllData, saveCollaborateur, deleteCollaborateur, updateCollaborateur } from "../axios/requestCollaborateur";
 import avatar from '../Assets/pro.png';
 import OCPHISTO from '../Assets/Train.jpg';
 import imagepro from '../Assets/pro.png';
+import { TbListDetails } from "react-icons/tb";
+import { RiCloseLargeLine } from "react-icons/ri";
+import Swal from "sweetalert2";
+import axios from 'axios';
 
 const Collaborateur = () => {
     const [showDropdown, setShowDropdown] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [showDeletePopup, setShowDeletePopup] = useState(false);
     const [showUpdatePopup, setShowUpdatePopup] = useState(false);
-    const [collaboratorToDelete, setCollaboratorToDelete] = useState(null);
-    const [collaboratorToUpdate, setCollaboratorToUpdate] = useState({
+    const [collaborators, setCollaborators] = useState([]);
+    const [newCollaborateur, setNewCollaborateur] = useState({
         nom: "",
         prenom: "",
         cin: "",
         tel: "",
         date_naissance: "",
         service: "",
-        role: "",
-        username: "",
-        password: ""
+        position: "",
+        email: "",
+        genre: "",
+        adress:""
     });
+    const [collaborateurs, setCollaborateurs] = useState([]);
+    const [selectedCollaborator, setSelectedCollaborator] = useState(null);
+
+    const [imageToUpload, setImageToUpload] = useState(null);
+    const [collaboratorToDelete, setCollaboratorToDelete] = useState(null);
+    const [collaboratorToUpdate, setCollaboratorToUpdate] = useState({
+        id: "",
+        nom: "",
+        prenom: "",
+        cin: "",
+        tel: "",
+        date_naissance: "",
+        service: "",
+        position: "",
+        email: "",
+        genre: "",
+        adress:""
+    });
+    const [updateImageToUpload, setUpdateImageToUpload] = useState(null);
+    const [showDetailsPopup, setShowDetailsPopup] = useState(false);
+    const toggleDetailsPopup = (collaborator) => {
+        setCollaboratorToUpdate(collaborator);
+        setShowDetailsPopup(!showDetailsPopup);
+    };
+
+    useEffect(() => {
+        fetchCollaborators();
+    }, []);
+
+    const fetchCollaborators = async () => {
+        try {
+            const data = await getAllData();
+            setCollaborators(data);
+        } catch (error) {
+            console.error("Error fetching collaborators:", error);
+        }
+    };
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        // Si c'est le champ date_naissance, assurez-vous de le gérer correctement
+        if (name === "date_naissance") {
+            // Pour s'assurer que le format est correct
+            setNewCollaborateur((prev) => ({ ...prev, [name]: value }));
+        } else {
+            setNewCollaborateur((prev) => ({ ...prev, [name]: value }));
+        }
+    };
+
+    const handleImageChange = (e) => {
+        setImageToUpload(e.target.files[0]);
+    };
+
+    const handleUpdateInputChange = (e) => {
+        const { name, value } = e.target;
+        setCollaboratorToUpdate((prev) => ({ ...prev, [name]: value }));
+    };
+
+    const handleUpdateImageChange = (e) => {
+        setUpdateImageToUpload(e.target.files[0]);
+    };
+
+    const handleSave = async () => {
+        console.log("Données à enregistrer:", newCollaborateur); // Ajoutez cette ligne
+        try {
+            let status = await saveCollaborateur(newCollaborateur, imageToUpload);
+    
+                Swal.fire({
+                    icon: "success",
+                    title: "Collaborateur ajouté avec succès",
+                    showConfirmButton: false,
+                    timer: 1500
+                  });
+                  setNewCollaborateur({
+                    nom: "",
+                    prenom: "",
+                    cin: "",
+                    tel: "",
+                    date_naissance: "",
+                    service: "",
+                    position: "",
+                    email: "",
+                    genre: "",
+                    adress:""
+                });
+            fetchCollaborators();
+            toggleModal();
+        } catch (error) {
+            Swal.fire({
+                title: "Erreur!",
+                text: "Une erreur s'est produite lors de l'ajout du collaborateur.",
+                icon: "error"
+            });
+        }
+    };
+    
+    const handleUpdate = async () => {
+        try {
+            await updateCollaborateur(collaboratorToUpdate, updateImageToUpload);
+            Swal.fire({
+                icon: "success",
+                title: "Collaborateur mis à jour avec succès",
+                showConfirmButton: false,
+                timer: 1500
+            });
+            fetchCollaborators();
+            toggleUpdatePopup(null);
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                title: "Erreur",
+                text: "Une erreur s'est produite lors de la mise à jour du collaborateur.",
+            });
+        }
+    };
+
+    const toggleDeleteModal = async (collaborateur) => {
+        console.log('Collaborateur sélectionné :', collaborateur);
+    
+        const result = await Swal.fire({
+            title: "Êtes-vous sûr ?",
+            text: "Vous ne pourrez pas revenir en arrière !",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Oui, supprimez-le !"
+        });
+    
+        if (result.isConfirmed) {
+            try {
+                await deleteCollaborateur(collaborateur.id, collaborateur.imageUrl);
+                Swal.fire({
+                    title: "Supprimé !",
+                    text: "Le collaborateur a été supprimé.",
+                    icon: "success"
+                });
+                // Rafraîchir la liste des collaborateurs
+                const response = await getAllData();
+                setCollaborateurs(response);
+                fetchCollaborators();
+            } catch (error) {
+                console.error('Erreur lors de la suppression du collaborateur :', error);
+                Swal.fire({
+                    title: "Erreur !",
+                    text: "Il y a eu un problème lors de la suppression du collaborateur.",
+                    icon: "error"
+                });
+            }
+        }
+    };
+    
+    
+    
+    
 
     const toggleDropdown = () => {
         setShowDropdown(!showDropdown);
@@ -41,29 +201,21 @@ const Collaborateur = () => {
     };
 
     const toggleUpdatePopup = (collaborator) => {
-        setCollaboratorToUpdate({
-            nom: "John",
-            prenom: "Doe",
-            cin: "AB123456",
-            tel: "0612345678",
-            date_naissance: "1990-01-01",
-            service: "Informatique",
-            role: "Développeur",
-            username: "johndoe",
-            password: "********"
+        setCollaboratorToUpdate(collaborator || {
+            id: "",
+            nom: "",
+            prenom: "",
+            cin: "",
+            tel: "",
+            date_naissance: "",
+            service: "",
+            position: "",
+            email: "",
+            genre: "",
+            adress:""
         });
+        setUpdateImageToUpload(null);
         setShowUpdatePopup(!showUpdatePopup);
-    };
-
-    const handleDelete = () => {
-        console.log("Deleting collaborator:", collaboratorToDelete);
-        setShowDeletePopup(false);
-    };
-
-    const handleUpdate = () => {
-        console.log("Updating collaborator:", collaboratorToUpdate);
-        setShowUpdatePopup(false);
-        // Implement update logic here
     };
 
     return (
@@ -133,6 +285,15 @@ const Collaborateur = () => {
                 <div className="container">
                     <div className="row">
                         <div className="col-lg-12">
+                            <div className="shoping__cart__btns">
+                                <button onClick={toggleModal} className="btn btn-primary custom-btn-primary ajout">
+                                    <span className="icon_loading"></span> Ajouter Collaborateur
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="row">
+                        <div className="col-lg-12">
                             <div className="shoping__cart__table">
                                 <table>
                                     <thead>
@@ -140,117 +301,40 @@ const Collaborateur = () => {
                                             <th className="shoping__Collab">Collaborateurs</th>
                                             <th>CIN</th>
                                             <th>Tel</th>
-                                            <th>Date Naissance</th>
                                             <th>Service</th>
-                                            <th>Role</th>
-                                            <th></th>
+                                            <th>Position</th>
+                                            <th>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td className="shoping__cart__item">
-                                                <img src={imagepro} alt="Collaborateur" />
-                                                <h5 name="nompre_collaborateur">John Doe</h5>
-                                            </td>
-                                            <td className="shoping__cart__cin">
-                                                AB123456
-                                            </td>
-                                            <td className="shoping__cart__tel">
-                                                0612345678
-                                            </td>
-                                            <td className="shoping__cart__date">
-                                                1990-01-01
-                                            </td>
-                                            <td className="shoping__cart__service">
-                                                Informatique
-                                            </td>
-                                            <td className="shoping__cart__role">
-                                                Développeur
-                                            </td>
-                                            <td className="shoping__cart__item__close">
-                                                <FaTrashAlt
-                                                    style={{ cursor: 'pointer', fontSize: '18px', color: '#b2b2b2' }}
-                                                    onClick={() => toggleDeletePopup("John Doe")}
-                                                />
-                                                <FaRegEdit
-                                                    style={{ cursor: 'pointer', marginLeft: '20px', fontSize: '18px', color: '#b2b2b2' }}
-                                                    onClick={() => toggleUpdatePopup("John Doe")}
-                                                />
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td className="shoping__cart__item">
-                                                <img src={imagepro} alt="Collaborateur" />
-                                                <h5 name="nompre_collaborateur">John Doe</h5>
-                                            </td>
-                                            <td className="shoping__cart__cin">
-                                                AB123456
-                                            </td>
-                                            <td className="shoping__cart__tel">
-                                                0612345678
-                                            </td>
-                                            <td className="shoping__cart__date">
-                                                1990-01-01
-                                            </td>
-                                            <td className="shoping__cart__service">
-                                                Informatique
-                                            </td>
-                                            <td className="shoping__cart__role">
-                                                Développeur
-                                            </td>
-                                            <td className="shoping__cart__item__close">
-                                                <FaTrashAlt
-                                                    style={{ cursor: 'pointer', fontSize: '18px', color: '#b2b2b2' }}
-                                                    onClick={() => toggleDeletePopup("John Doe")}
-                                                />
-                                                <FaRegEdit
-                                                    style={{ cursor: 'pointer', marginLeft: '20px', fontSize: '18px', color: '#b2b2b2' }}
-                                                    onClick={() => toggleUpdatePopup("John Doe")}
-                                                />
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td className="shoping__cart__item">
-                                                <img src={imagepro} alt="Collaborateur" />
-                                                <h5 name="nompre_collaborateur">John Doe</h5>
-                                            </td>
-                                            <td className="shoping__cart__cin">
-                                                AB123456
-                                            </td>
-                                            <td className="shoping__cart__tel">
-                                                0612345678
-                                            </td>
-                                            <td className="shoping__cart__date">
-                                                1990-01-01
-                                            </td>
-                                            <td className="shoping__cart__service">
-                                                Informatique
-                                            </td>
-                                            <td className="shoping__cart__role">
-                                                Développeur
-                                            </td>
-                                            <td className="shoping__cart__item__close">
-                                                <FaTrashAlt
-                                                    style={{ cursor: 'pointer', fontSize: '18px', color: '#b2b2b2' }}
-                                                    onClick={() => toggleDeletePopup("John Doe")}
-                                                />
-                                                <FaRegEdit
-                                                    style={{ cursor: 'pointer', marginLeft: '20px', fontSize: '18px', color: '#b2b2b2' }}
-                                                    onClick={() => toggleUpdatePopup("John Doe")}
-                                                />
-                                            </td>
-                                        </tr>
+                                        {collaborators.map((collaborator) => (
+                                            <tr key={collaborator.id}>
+                                                <td className="shoping__cart__item">
+                                                    <img className="image" src={collaborator.imageUrl ? `${BASEURL}image/${collaborator.imageUrl}` : imagepro} alt="Collaborateur" />
+                                                    <h5>{collaborator.nom} {collaborator.prenom}</h5>
+                                                </td>
+                                                <td>{collaborator.cin}</td>
+                                                <td>{collaborator.tel}</td>
+                                                <td>{collaborator.service}</td>
+                                                <td>{collaborator.position}</td>
+                                                <td className="shoping__cart__item__close">
+                                                    <FaTrashAlt
+                                                        style={{ cursor: "pointer", color: "red" }}
+                                                        onClick={() => toggleDeleteModal(collaborator)}
+                                                    />
+                                                    <FaRegEdit
+                                                        style={{ cursor: "pointer", marginLeft: "10px", color: "green" }}
+                                                        onClick={() => toggleUpdatePopup(collaborator)}
+                                                    />
+                                                    <TbListDetails
+                                                        style={{ cursor: "pointer", marginLeft: "10px", color: "blue" }}
+                                                        onClick={() => toggleDetailsPopup(collaborator)}
+                                                    />
+                                                </td>
+                                            </tr> 
+                                        ))}
                                     </tbody>
                                 </table>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="row">
-                        <div className="col-lg-12">
-                            <div className="shoping__cart__btns">
-                                <button onClick={toggleModal} className="btn btn-primary custom-btn-primary" style={{ backgroundColor: '#7fad39' }}>
-                                    <span className="icon_loading"></span> Ajouter Collaborateur
-                                </button>
                             </div>
                         </div>
                     </div>
@@ -258,129 +342,179 @@ const Collaborateur = () => {
             </section>
 
             {/* Add Collaborateur Modal */}
-            {showModal && <div className="modal-backdrop fade show"></div>}
             {showModal && (
                 <div className="modal fade show" style={{ display: 'block' }}>
                     <div className="modal-dialog">
                         <div className="modal-content">
+                            <RiCloseLargeLine className="close-icon" onClick={toggleModal} />
                             <div className="modal-header">
                                 <h5 className="modal-title">Ajouter Collaborateur</h5>
                             </div>
                             <div className="modal-body">
                                 <form>
                                     <div className="form-group">
-                                        <input type="text" className="form-control" id="nom" placeholder="Nom"/>
+                                        <label>Nom</label>
+                                        <input type="text" className="form-control" name="nom" value={newCollaborateur.nom} onChange={handleInputChange} required />
                                     </div>
                                     <div className="form-group">
-                                        <input type="text" className="form-control" id="prenom" placeholder="Prenom"/>
+                                        <label>Prenom</label>
+                                        <input type="text" className="form-control" name="prenom" value={newCollaborateur.prenom} onChange={handleInputChange} required />
                                     </div>
                                     <div className="form-group">
-                                        <input type="text" className="form-control" id="cin" placeholder="CIN"/>
+                                        <label>CIN</label>
+                                        <input type="text" className="form-control" name="cin" value={newCollaborateur.cin} onChange={handleInputChange} required />
                                     </div>
                                     <div className="form-group">
-                                        <input type="text" className="form-control" id="tel" placeholder="Tel"/>
+                                        <label>Telephone</label>
+                                        <input type="text" className="form-control" name="tel" value={newCollaborateur.tel} onChange={handleInputChange} required />
                                     </div>
                                     <div className="form-group">
-                                        <input type="date" className="form-control" id="date_naissance" placeholder="Date Naissance"/>
+                                        <label>Date Naissance</label>
+                                        <input type="date" className="form-control" name="date_naissance" value={newCollaborateur.date_naissance} onChange={handleInputChange} required />
                                     </div>
                                     <div className="form-group">
-                                        <input type="text" className="form-control" id="service" placeholder="Service"/>
+                                        <label>Service</label>
+                                        <input type="text" className="form-control" name="service" value={newCollaborateur.service} onChange={handleInputChange} required />
                                     </div>
                                     <div className="form-group">
-                                        <input type="text" className="form-control" id="role" placeholder="Role"/>
+                                        <label>Position</label>
+                                        <input type="text" className="form-control" name="position" value={newCollaborateur.position} onChange={handleInputChange} required />
                                     </div>
                                     <div className="form-group">
-                                        <input type="text" className="form-control" id="Username" placeholder="Nom d'utilsateur"/>
+                                        <label>Email</label>
+                                        <input type="email" className="form-control" name="email" value={newCollaborateur.email} onChange={handleInputChange} required />
                                     </div>
                                     <div className="form-group">
-                                        <input type="text" className="form-control" id="pass" placeholder="Mot de passe"/>
+                                        <label>Adress</label>
+                                        <input type="text" className="form-control" name="adress" value={newCollaborateur.adress} onChange={handleInputChange} required />
                                     </div>
                                     <div className="form-group">
-                                        <input type="file" className="form-control" id="image" name="image" placeholder="Image" />
+                                        <label>Genre</label>
+                                        <div>
+                                            <label>
+                                                <input type="radio" name="genre" value="homme" checked={newCollaborateur.genre === "homme"} onChange={handleInputChange} required />
+                                                Homme
+                                            </label>
+                                            <label style={{ marginLeft: '10px' }}>
+                                                <input type="radio" name="genre" value="femme" checked={newCollaborateur.genre === "femme"} onChange={handleInputChange} required />
+                                                Femme
+                                            </label>
+                                        </div>
                                     </div>
                                 </form>
                             </div>
                             <div className="modal-footer">
                                 <button type="button" className="btn btn-secondary" onClick={toggleModal}>Fermer</button>
-                                <button type="button" className="btn btn-primary custom-btn-primary" style={{ backgroundColor: '#7fad39' }}>Enregistrer</button>
+                                <button type="button" className="btn btn-primary custom-btn-primary" style={{ backgroundColor: '#7fad39' }} onClick={handleSave}>Enregistrer</button>
                             </div>
                         </div>
                     </div>
                 </div>
             )}
 
-            {/* Update Collaborateur Modal */}
-            {showUpdatePopup && <div className="modal-backdrop fade show"></div>}
+            {/* Update Collaborateur Popup */}
             {showUpdatePopup && (
                 <div className="modal fade show" style={{ display: 'block' }}>
                     <div className="modal-dialog">
                         <div className="modal-content">
+                            <RiCloseLargeLine className="close-icon" onClick={() => toggleUpdatePopup(null)} />
                             <div className="modal-header">
                                 <h5 className="modal-title">Modifier Collaborateur</h5>
                             </div>
                             <div className="modal-body">
                                 <form>
                                     <div className="form-group">
-                                        <input type="text" className="form-control" id="nom" placeholder="Nom" defaultValue={collaboratorToUpdate.nom} />
+                                        <label>Nom</label>
+                                        <input type="text" className="form-control" name="nom" value={collaboratorToUpdate.nom} onChange={handleUpdateInputChange} required />
                                     </div>
                                     <div className="form-group">
-                                        <input type="text" className="form-control" id="prenom" placeholder="Prenom" defaultValue={collaboratorToUpdate.prenom} />
+                                        <label>Prenom</label>
+                                        <input type="text" className="form-control" name="prenom" value={collaboratorToUpdate.prenom} onChange={handleUpdateInputChange} required />
                                     </div>
                                     <div className="form-group">
-                                        <input type="text" className="form-control" id="cin" placeholder="CIN" defaultValue={collaboratorToUpdate.cin} />
+                                        <label>CIN</label>
+                                        <input type="text" className="form-control" name="cin" value={collaboratorToUpdate.cin} onChange={handleUpdateInputChange} required />
                                     </div>
                                     <div className="form-group">
-                                        <input type="text" className="form-control" id="tel" placeholder="Tel" defaultValue={collaboratorToUpdate.tel} />
+                                        <label>Telephone</label>
+                                        <input type="text" className="form-control" name="tel" value={collaboratorToUpdate.tel} onChange={handleUpdateInputChange} required />
                                     </div>
                                     <div className="form-group">
-                                        <input type="date" className="form-control" id="date_naissance" placeholder="Date Naissance" defaultValue={collaboratorToUpdate.date_naissance} />
+                                        <label>Date Naissance</label>
+                                        <input type="date" className="form-control" name="date_naissance" value={collaboratorToUpdate.date_naissance} onChange={handleUpdateInputChange} required />
                                     </div>
                                     <div className="form-group">
-                                        <input type="text" className="form-control" id="service" placeholder="Service" defaultValue={collaboratorToUpdate.service} />
+                                        <label>Service</label>
+                                        <input type="text" className="form-control" name="service" value={collaboratorToUpdate.service} onChange={handleUpdateInputChange} required />
                                     </div>
                                     <div className="form-group">
-                                        <input type="text" className="form-control" id="role" placeholder="Role" defaultValue={collaboratorToUpdate.role} />
+                                        <label>Position</label>
+                                        <input type="text" className="form-control" name="position" value={collaboratorToUpdate.position} onChange={handleUpdateInputChange} required />
                                     </div>
                                     <div className="form-group">
-                                        <input type="text" className="form-control" id="Username" placeholder="Nom d'utilsateur" defaultValue={collaboratorToUpdate.username} />
+                                        <label>Email</label>
+                                        <input type="email" className="form-control" name="email" value={collaboratorToUpdate.email} onChange={handleUpdateInputChange} required />
                                     </div>
                                     <div className="form-group">
-                                        <input type="text" className="form-control" id="pass" placeholder="Mot de passe" defaultValue={collaboratorToUpdate.password} />
+                                        <label>Adress</label>
+                                        <input type="text" className="form-control" name="adress" value={collaboratorToUpdate.adress} onChange={handleUpdateInputChange} required />
                                     </div>
                                     <div className="form-group">
-                                        <input type="file" className="form-control" id="image" name="image" placeholder="Image" />
+                                        <label>Genre</label>
+                                        <div>
+                                            <label>
+                                                <input type="radio" name="genre" value="homme" checked={collaboratorToUpdate.genre === "homme"} onChange={handleUpdateInputChange} required />
+                                                Homme
+                                            </label>
+                                            <label style={{ marginLeft: '10px' }}>
+                                                <input type="radio" name="genre" value="femme" checked={collaboratorToUpdate.genre === "femme"} onChange={handleUpdateInputChange} required />
+                                                Femme
+                                            </label>
+                                        </div>
                                     </div>
                                 </form>
                             </div>
                             <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" onClick={() => setShowUpdatePopup(false)}>Fermer</button>
-                                <button type="button" className="btn btn-primary custom-btn-primary" style={{ backgroundColor: '#7fad39' }} onClick={handleUpdate}>Mettre à jour</button>
+                                <button type="button" className="btn btn-secondary" onClick={() => toggleUpdatePopup(null)}>Fermer</button>
+                                <button type="button" className="btn btn-primary custom-btn-primary" style={{ backgroundColor: '#7fad39' }} onClick={handleUpdate}>Enregistrer</button>
                             </div>
                         </div>
                     </div>
                 </div>
             )}
+            {showDetailsPopup && (
+    <div className="modal fade show" style={{ display: 'block' }}>
+        <div className="modal-dialog">
+            <div className="modal-content">
+                <RiCloseLargeLine className="close-icon" onClick={() => toggleDetailsPopup(null)} />
+                <div className="modal-header">
+                    <h5 className="modal-title">Détails du Collaborateur</h5>
+                </div>
+                <div className="modal-body">
+                    {/* Affichage des détails du collaborateur */}
+                    {collaboratorToUpdate && ( // Vérifiez que collaboratorToUpdate n'est pas null
+                        <div className="details-section">
+                            <p><strong>Nom:</strong> {collaboratorToUpdate.nom}</p>
+                            <p><strong>Prénom:</strong> {collaboratorToUpdate.prenom}</p>
+                            <p><strong>CIN:</strong> {collaboratorToUpdate.cin}</p>
+                            <p><strong>Téléphone:</strong> {collaboratorToUpdate.tel}</p>
+                            <p><strong>Date de Naissance:</strong> {collaboratorToUpdate.date_naissance}</p>
+                            <p><strong>Service:</strong> {collaboratorToUpdate.service}</p>
+                            <p><strong>Position:</strong> {collaboratorToUpdate.position}</p>
+                            <p><strong>Email:</strong> {collaboratorToUpdate.email}</p>
+                            <p><strong>Adress:</strong> {collaboratorToUpdate.adress}</p>
+                            <p><strong>Genre:</strong> {collaboratorToUpdate.genre === "homme" ? "Homme" : "Femme"}</p>
+                        </div>
+                    )}
+                </div>
+                <div className="modal-footer">
+                    <button type="button" className="btn btn-secondary" onClick={() => toggleDetailsPopup(null)}>Fermer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+)}
 
-            {/* Delete Confirmation Popup */}
-            {showDeletePopup && <div className="modal-backdrop fade show"></div>}
-            {showDeletePopup && (
-                <div className="modal fade show" style={{ display: 'block' }}>
-                    <div className="modal-dialog">
-                        <div className="modal-content">
-                            <div className="modal-header">
-                                <h5 className="modal-title">Confirmation de suppression</h5>
-                            </div>
-                            <div className="modal-body">
-                                <p>Voulez-vous vraiment supprimer le collaborateur "{collaboratorToDelete}" ?</p>
-                            </div>
-                            <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" onClick={() => setShowDeletePopup(false)}>Annuler</button>
-                                <button type="button" className="btn btn-danger" onClick={handleDelete}>Supprimer</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
         </div>
     );
 };
