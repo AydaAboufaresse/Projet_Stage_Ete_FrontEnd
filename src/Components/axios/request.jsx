@@ -49,4 +49,9 @@ async function GetAllData() {
   return response.data;
 }
 
-export { BASEURL, GetAllData, saveVehicule, deleteVehicule, updateVehicule };
+async function updateVehicleStatus(vehiculeId, status) {
+  const response = await axios.patch(`${BASEURL}vehicule/${vehiculeId}/status`, { status });
+  return response.status;
+}
+
+export { BASEURL, GetAllData, saveVehicule, deleteVehicule, updateVehicule, updateVehicleStatus };
