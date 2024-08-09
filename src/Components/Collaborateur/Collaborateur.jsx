@@ -319,15 +319,15 @@ const Collaborateur = () => {
                                                 <td>{collaborator.position}</td>
                                                 <td className="shoping__cart__item__close">
                                                     <FaTrashAlt
-                                                        style={{ cursor: "pointer", color: "red" }}
+                                                        style={{ cursor: "pointer",fontSize: '18px', color: '#b2b2b2'  }}
                                                         onClick={() => toggleDeleteModal(collaborator)}
                                                     />
                                                     <FaRegEdit
-                                                        style={{ cursor: "pointer", marginLeft: "10px", color: "green" }}
+                                                        style={{ cursor: "pointer", marginLeft: "10px", fontSize: '18px', color: '#b2b2b2' }}
                                                         onClick={() => toggleUpdatePopup(collaborator)}
                                                     />
                                                     <TbListDetails
-                                                        style={{ cursor: "pointer", marginLeft: "10px", color: "blue" }}
+                                                        style={{ cursor: "pointer", marginLeft: "10px", fontSize: '18px', color: '#b2b2b2'  }}
                                                         onClick={() => toggleDetailsPopup(collaborator)}
                                                     />
                                                 </td>
@@ -486,7 +486,6 @@ const Collaborateur = () => {
     <div className="modal fade show" style={{ display: 'block' }}>
         <div className="modal-dialog">
             <div className="modal-content">
-                <RiCloseLargeLine className="close-icon" onClick={() => toggleDetailsPopup(null)} />
                 <div className="modal-header">
                     <h5 className="modal-title">Détails du Collaborateur</h5>
                 </div>
