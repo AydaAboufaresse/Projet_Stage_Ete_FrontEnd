@@ -7,6 +7,7 @@ import { FaTrashAlt, FaRegEdit } from "react-icons/fa";
 import avatar from '../Assets/pro.png';
 import OCPHISTO from '../Assets/OCP_history.jpg';
 import { FaFilePdf } from "react-icons/fa6";
+import { TbListDetails } from 'react-icons/tb';
 import moment from 'moment';
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -75,7 +76,7 @@ const MyDocument = ({ mission }) => (
             <Text style={styles.title}>Rapport de Mission</Text>
             <View style={styles.section}>
                 <Text style={styles.paragraph}>
-                    Cette mission avait pour but de {mission.titre}. Elle a été menée du {mission.dateDebut} au {mission.dateFin} et a été relue par {mission.collaborator}.
+                    Cette mission avait pour but de {mission.titre}. Elle a été menée du {mission.dateDebut} au {mission.dateFin} et a été relue par {mission.collaborateur.nom} {mission.collaborateur.prenom}.
                 </Text>
                 <Text style={styles.paragraph}>
                     Au cours de cette mission, nous avons recueilli des données essentielles et analysé les processus en place. La mission a été effectuée à l'emplacement géographique suivant : longitude {mission.mission_longitude} et latitude {mission.mission_latitude}. Le véhicule utilisé pour cette mission était immatriculé {mission.vehicule.immatriculation}.
@@ -98,11 +99,12 @@ const Mission = () => {
     const [showEditModal, setShowEditModal] = useState(false);
     const [longitude, setLongitude] = useState('');
     const [latitude, setLatitude] = useState('');
-    const [selectedCollaborator, setSelectedCollaborator] = useState('');
+    const [collaborateurs, setCollaborateur] = useState('');
     const [selectedMission, setSelectedMission] = useState(null);
     const [vehicles, setVehicles] = useState([]);
     const [missions, setMissions] = useState([]);
     const [oldMatricule, setOldMatricule] = useState(null);
+    const [showDetailsPopup, setShowDetailsPopup] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [formData, setFormData] = useState({
         dateDebut: '',
@@ -110,7 +112,7 @@ const Mission = () => {
         description: '',
         statut:'',
         titre: '',
-        collaborator: '',
+        collaborateur: {id : ""},
         vehicule: {vehiculeId : ""},
         mission_longitude: '',
         mission_latitude: ''
@@ -121,7 +123,7 @@ const Mission = () => {
         description: '',
         statut:'',
         titre: '',
-        collaborator: '',
+        collaborateur: {id : ""},
         vehicule: {vehiculeId : ""},
         mission_longitude: '',
         mission_latitude: ''
@@ -140,10 +142,36 @@ const Mission = () => {
         fetchVehicles();
     }, []);
     
-    const collaborators = [
-        { id: '1', name: 'Ayda' },
-        { id: '2', name: 'Lina' },
-    ];
+    useEffect(() => {
+        async function fetchCollaborateurs() {
+            try {
+                const response = await fetch("http://localhost:8087/api/collaborateur/");
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                const data = await response.json();
+                setCollaborateur(data);
+            } catch (error) {
+                console.error("Error fetching collaborateurs:", error);
+            }
+        }
+        fetchCollaborateurs();
+    }, []);
+
+    const toggleDetailsPopup = (mission) => {
+        setMission(mission);
+        setShowDetailsPopup(!showDetailsPopup);
+    };
+    const handleInputChangecollab = (e) => {
+        const { name, value } = e.target;
+        setFormData(prevState => ({
+            ...prevState,
+            collaborateur: {
+                ...prevState.collaborateur,
+                id: value
+            }
+        }));
+    };
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         if (name === "vehicule.vehiculeId") {
@@ -179,7 +207,16 @@ const Mission = () => {
                 });
             }
     
-            setMissions(missions.map(mission => mission.id === selectedMission.id ? response.data : mission));
+            const missionsResponse = await axios.get(`${BASEURL}`);
+            setMissions(missionsResponse.data);
+            try {
+                const response = await fetch("http://localhost:8087/api/");
+                const data = await response.json();
+                const availableVehicles = data.filter(vehicle => vehicle.status !== 1);
+                setVehicles(availableVehicles);
+            } catch (error) {
+                console.error("Error fetching vehicles:", error);
+            }
             setShowEditModal(false); 
     
             Swal.fire({
@@ -197,8 +234,12 @@ const Mission = () => {
             });
         }
     };
-    const handleCollaboratorChange = (e) => {
-        setSelectedCollaborator(e.target.value);
+    const handleCollaborateurChange = (e) => {
+        const selectedCollaborateur = e.target.value;
+        setMission(prevState => ({
+            ...prevState,
+            collaborateur: { id: selectedCollaborateur }
+        }));
     };
 
     const handleMatriculeChange = async (e) => {
@@ -259,7 +300,8 @@ const Mission = () => {
                 ...mission,
                 dateDebut: formatDate(mission.dateDebut),
                 dateFin: formatDate(mission.dateFin),
-                vehicule: { vehiculeId: mission.vehicule.vehiculeId }
+                vehicule: { vehiculeId: mission.vehicule.vehiculeId },
+                collaborateur: { id: mission.collaborateur.id}
             });
             setSelectedMission(mission);
             setOldMatricule(mission.vehicule.vehiculeId);
@@ -286,11 +328,19 @@ const Mission = () => {
                 await deleteMission(mission.id);
                 Swal.fire({
                     title: "Supprimé !",
-                    text: "Votre fichier a été supprimé.",
+                    text: "Votre Mission a été supprimé.",
                     icon: "success"
                 });
             const response = await axios.get(`${BASEURL}`);
-            setVehicles(response.data);
+            setMissions(response.data);
+            try {
+                const response = await fetch("http://localhost:8087/api/");
+                const data = await response.json();
+                const availableVehicles = data.filter(vehicle => vehicle.status !== 1);
+                setVehicles(availableVehicles);
+            } catch (error) {
+                console.error("Error fetching vehicles:", error);
+            }
                 
             } catch (error) {
                 console.error('Error deleting mission:', error);
@@ -366,20 +416,14 @@ const Mission = () => {
         console.log("Mission Data before2 saving:", missionData);
         try {
             const response = await saveMission(missionData);
-            if (response.status === 201) {
-                Swal.fire({
-                    icon: "success",
-                    title: "Votre mission a été enregistrée",
-                    showConfirmButton: false,
-                    timer: 1500
-                });
+            if (response === 200) {
                 setMission({
                     dateDebut: "",
                     dateFin: "",
                     description: "",
                     statut: "",
                     titre: "",
-                    collaborator: "",
+                    collaborateur: {id: ""},
                     vehicule: {vehiculeId : ""},
                     mission_longitude: "",
                     mission_latitude: "",
@@ -388,7 +432,21 @@ const Mission = () => {
                 setLatitude('');
                 const missionsResponse = await axios.get(`${BASEURL}`);
                 setMissions(missionsResponse.data);
+                try {
+                    const response = await fetch("http://localhost:8087/api/");
+                    const data = await response.json();
+                    const availableVehicles = data.filter(vehicle => vehicle.status !== 1);
+                    setVehicles(availableVehicles);
+                } catch (error) {
+                    console.error("Error fetching vehicles:", error);
+                }
                 setShowModal(false);
+                Swal.fire({
+                    icon: "success",
+                    title: "Votre mission a été enregistrée",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
             } else {
                 Swal.fire({
                     icon: "error",
@@ -497,7 +555,7 @@ const Mission = () => {
                                             <td>{mission.mission_latitude}</td>
                                             <td>{mission.dateDebut}</td>
                                             <td>{mission.dateFin}</td>
-                                            <td>{mission.collaborator}</td>
+                                            <td>{mission.collaborateur.nom} {mission.collaborateur.prenom}</td>
                                             <td>{mission.vehicule.immatriculation}</td>
                                             <td className="shoping__cart__item__close">
                                                 <FaTrashAlt
@@ -519,6 +577,10 @@ const Mission = () => {
                                                     </a>
                                                     )}
                                                 </BlobProvider>
+                                                <TbListDetails
+                                                    style={{ cursor: 'pointer', marginLeft: '10px', fontSize: '18px', color: '#b2b2b2' }}
+                                                    onClick={() => toggleDetailsPopup(mission)}
+                                                />
                                             </td>
                                         </tr>
                                      ))}
@@ -636,14 +698,14 @@ const Mission = () => {
                             <select
                                 className="form-control"
                                 name="collaborator"
-                                value={selectedCollaborator}
-                                onChange={handleCollaboratorChange}
+                                value={mission.id}
+                                onChange={handleCollaborateurChange}
                                 required
                             >
                                 <option value="">Choisir un Collaborateur</option>
-                                {collaborators.map(collaborator => (
-                                    <option key={collaborator.id} >
-                                        {collaborator.name}
+                                {collaborateurs.map(collaborateur => (
+                                    <option key={collaborateur.id}value={collaborateur.id} >
+                                        {collaborateur.nom} {collaborateur.prenom}
                                     </option>
                                 ))}
                             </select>
@@ -677,7 +739,7 @@ const Mission = () => {
         </div>
     </div>
 )}
-            
+ 
             {showModal && <div className="modal-backdrop fade show"></div>}
             {showEditModal && (
                 <div className="modal fade show" style={{ display: 'block' }}>
@@ -766,12 +828,19 @@ const Mission = () => {
                             />
                         </div>
                                     <div className="form-group">
-                                        <select className="form-control" value={selectedCollaborator} onChange={handleCollaboratorChange}>
-                                            <option value="">Choisir un Collaborateur</option>
-                                            {collaborators.map(collaborator => (
-                                                <option key={collaborator.id}  >{collaborator.name}</option>
-                                            ))}
-                                        </select>
+                                    <select
+            className="form-control"
+            name="collaborateur.id"
+            value={formData.collaborateur.id}
+            onChange={handleInputChangecollab}
+        >
+            <option value="">Choisir Collaborateur</option>
+            {collaborateurs.map(collaborateur => (
+                <option key={collaborateur.id} value={collaborateur.id}>
+                    {collaborateur.nom} {collaborateur.prenom}
+                </option>
+            ))}
+        </select>
                                     </div>
                                     <div className="form-group">
         <select
@@ -798,8 +867,38 @@ const Mission = () => {
                     </div>
                 </div>
             )}
+            {showDetailsPopup && (
+    <div className="modal fade show" style={{ display: 'block' }}>
+        <div className="modal-dialog">
+            <div className="modal-content">
+                <div className="modal-header">
+                    <h5 className="modal-title">Détails Mission</h5>
+                </div>
+                <div className="modal-body">
+                    {mission && ( 
+                        <div className="details-section">
+                            <p><strong>Titre :</strong> {mission.titre}</p>
+                            <p><strong>Description :</strong> {mission.description}</p>
+                            <p><strong>Date Debut :</strong> {mission.dateDebut}</p>
+                            <p><strong>Date Fin :</strong> {mission.dateFin}</p>
+                            <p><strong>Latitude :</strong> {mission.mission_latitude}</p>
+                            <p><strong>Longtitude :</strong> {mission.mission_longitude}</p>
+                            <p><strong>Statut :</strong> {mission.statut}</p>
+                            <p><strong>Matricule :</strong> {mission.vehicule.immatriculation}</p>
+                            <p><strong>Nom & Prenom du Collaborateur :</strong> {mission.collaborateur.nom} {mission.collaborateur.prenom}</p>
+                        </div>
+                    )}
+                </div>
+                <div className="modal-footer">
+                    <button type="button" className="btn btn-secondary" onClick={() => toggleDetailsPopup(null)}>Fermer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+)}
         </div>
     );
+    
 };
 
 export default Mission;
