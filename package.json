@@ -17,7 +17,8 @@
     "react-leaflet": "^4.2.1",
     "react-router-dom": "^6.25.0",
     "react-scripts": "5.0.1",
-    "sweetalert2": "^11.12.3",
+    "sweetalert2": "^11.12.4",
+    "sweetalert2-react-content": "^5.0.7",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
