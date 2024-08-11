@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import OCPLogo from '../Assets/OCP_Group.png';
 import './Home.css';
@@ -7,6 +7,7 @@ import { BsBellFill, BsChevronDown, BsChevronUp } from "react-icons/bs";
 import { FaBars } from "react-icons/fa";
 import avatar from '../Assets/pro.png';
 import L from "leaflet";
+import { useNavigate } from "react-router-dom";
 
 const DefaultIcon = L.icon({
     iconUrl: require('../Assets/live-location.png'), 
@@ -18,7 +19,15 @@ L.Marker.prototype.options.icon = DefaultIcon;
 const Home = () => {
     const [showDropdown, setShowDropdown] = useState(false);
     const [showCategories, setShowCategories] = useState(false);
+    const navigate = useNavigate();
     const position = [31.7917, -7.0926]; // Coordinates for Morocco
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            navigate('/');
+        }
+    }, [navigate]);
 
     const toggleDropdown = () => {
         setShowDropdown(!showDropdown);
@@ -26,6 +35,12 @@ const Home = () => {
 
     const toggleCategories = () => {
         setShowCategories(!showCategories);
+    };
+
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        navigate("/");
     };
 
     return (
@@ -65,7 +80,7 @@ const Home = () => {
                                         {showDropdown && (
                                             <ul className="dropdown-menu">
                                                 <li><a href="/Profile">Profile</a></li>
-                                                <li><a href="#">Déconnexion</a></li>
+                                                <li><a onClick={handleLogout}>Déconnexion</a></li>
                                             </ul>
                                         )}
                                     </li>
