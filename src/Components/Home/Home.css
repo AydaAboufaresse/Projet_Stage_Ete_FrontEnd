@@ -104,6 +104,16 @@ ol {
 	display: inline-block;
 }
 
+
+.header__cart {
+	text-align: right;
+	padding: 40px 0;
+}
+
+.header__cart ul {
+	display: inline-block;
+	margin-right: 25px;
+}
 .header__menu {
 	padding: 50px 0;
 }
@@ -182,15 +192,6 @@ ol {
     text-decoration: none;
 }
 
-.header__cart {
-	text-align: right;
-	padding: 40px 0;
-}
-
-.header__cart ul {
-	display: inline-block;
-	margin-right: 25px;
-}
 
 .header__cart ul li {
 	list-style: none;

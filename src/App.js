@@ -6,6 +6,7 @@ import Vehicule from "./Components/Vehicule/Vehicule";
 import Collaborateur from "./Components/Collaborateur/Collaborateur"; 
 import Profile from "./Components/Profile/profile"; 
 import Mission from "./Components/Mission/Mission"; 
+import Reservation from "./Components/reservation/reservation"; 
 
 const App = () => (
     <Router>
@@ -16,6 +17,7 @@ const App = () => (
             <Route path="/Collaborateur" element={<Collaborateur/>}/>
             <Route path="/Profile" element={<Profile/>}/>
             <Route path="/Mission" element={<Mission/>}/>
+            <Route path="/Reservation" element={<Reservation/>}/>
         </Routes>
     </Router>
 );

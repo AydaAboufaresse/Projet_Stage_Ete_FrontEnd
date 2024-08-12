@@ -29,6 +29,7 @@ const Profile = () => {
                                     <li><a href="/Mission">Missions</a></li>
                                     <li><a href="/Collaborateur">Collaborateurs</a></li>
                                     <li><a href="/Vehicule">Vehicules</a></li>
+                                    <li><a href="/Reservation">Reservation</a></li>
                                 </ul>
                             </nav>
                         </div>
