@@ -1,0 +1,97 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;600;900&display=swap');
+
+@import "~leaflet/dist/leaflet.css";
+.filterreservation {
+	margin-bottom: 15px;
+}
+
+.filterreservation span {
+	font-size: 16px;
+	color: #6f6f6f;
+	display: inline-block;
+}
+
+.filterreservation .nice-select {
+	background-color: #fff;
+	border-radius: 0;
+	border: none;
+	display: inline-block;
+	float: none;
+	height: 0;
+	line-height: 0;
+	padding-left: 18px;
+	padding-right: 30px;
+	font-size: 16px;
+	color: #1c1c1c;
+	font-weight: 700;
+	cursor: pointer;
+}
+
+.filterreservation .nice-select span {
+	color: #1c1c1c;
+}
+
+.filterreservation .nice-select:after {
+	border-bottom: 1.5px solid #1c1c1c;
+	border-right: 1.5px solid #1c1c1c;
+	height: 8px;
+	margin-top: 0;
+	right: 16px;
+	width: 8px;
+	top: -5px;
+}
+
+.filterreservation .nice-select.open .list {
+	opacity: 1;
+	pointer-events: auto;
+	-webkit-transform: scale(1) translateY(0);
+	-ms-transform: scale(1) translateY(0);
+	transform: scale(1) translateY(0);
+}
+
+.filterreservation .nice-select .list {
+	border-radius: 0;
+	margin-top: 0;
+	top: 15px;
+}
+
+.filterreservation .nice-select .option {
+	line-height: 30px;
+	min-height: 30px;
+}
+.filterreservation select {
+    padding: 0px 30px; 
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    margin-left: 20px;
+    background-color: #fff;
+    font-size: 15px;
+    appearance: none; 
+    -webkit-appearance: none; 
+    -moz-appearance: none; 
+    background-image: url('data:image/svg+xml,\<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" width="12" height="12"><path d="M6 10l-5-6h10z"/></svg>');
+    background-repeat: no-repeat;
+    background-position-x: calc(100% - 8px);
+    background-position-y: center;
+    cursor: pointer;
+}
+
+.filterreservation select:focus {
+    outline: none;
+    border-color: #7fad39; 
+    box-shadow: 0 0 0 0.2rem rgba(87, 142, 109, 0.25); 
+}
+
+
+
+.filterreservation {
+    margin-top: 20px; 
+}
+
+
+
+
+.heroj{
+	padding-top: 30px;
+    padding-bottom: 30px;
+}
