@@ -12,8 +12,11 @@ import { TbListDetails } from "react-icons/tb";
 import { RiCloseLargeLine } from "react-icons/ri";
 import Swal from "sweetalert2";
 import axios from 'axios';
+import { useNavigate } from "react-router-dom";
+   
 
 const Collaborateur = () => {
+    const navigate = useNavigate();
     const [showDropdown, setShowDropdown] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [showDeletePopup, setShowDeletePopup] = useState(false);
@@ -217,7 +220,18 @@ const Collaborateur = () => {
         setUpdateImageToUpload(null);
         setShowUpdatePopup(!showUpdatePopup);
     };
-
+    
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            navigate('/');
+        }
+    }, [navigate]);
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        navigate("/");
+    };
     return (
         <div>
             {/* Header section */}
@@ -257,7 +271,7 @@ const Collaborateur = () => {
                                         {showDropdown && (
                                             <ul className="dropdown-menu">
                                                 <li><a href="/Profile">Profile</a></li>
-                                                <li><a href="#">Déconnexion</a></li>
+                                                <li><a  onClick={handleLogout}>Déconnexion</a></li>
                                             </ul>
                                         )}
                                     </li>

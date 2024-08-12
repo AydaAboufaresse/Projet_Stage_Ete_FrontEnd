@@ -9,11 +9,15 @@ import { CiBookmarkPlus } from "react-icons/ci";
 import { FaTrashAlt, FaPen } from "react-icons/fa";
 import avatar from '../Assets/pro.png';
 import OCPHISTO from '../Assets/OCP_history.jpg';
+import { useNavigate } from "react-router-dom";
 import { GetAllData, saveVehicule, deleteVehicule, updateVehicule } from '../axios/request'
 import Swal from "sweetalert2";
 const BASEURL = 'http://localhost:8087/api/';
 
+   
+
 const Vehicule = () => {
+    const navigate = useNavigate();
     const [showDropdown, setShowDropdown] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
@@ -220,7 +224,18 @@ const [searchQuery, setSearchQuery] = useState("");
         return response.data;
     };
 
-   
+    
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            navigate('/');
+        }
+    }, [navigate]);
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        navigate("/");
+    };
     return (
         <div>
             <header className="header">
@@ -259,7 +274,7 @@ const [searchQuery, setSearchQuery] = useState("");
                                         {showDropdown && (
                                             <ul className="dropdown-menu">
                                                 <li><a href="/Profile">Profile</a></li>
-                                                <li><a href="#">Déconnexion</a></li>
+                                                <li><a  onClick={handleLogout}>Déconnexion</a></li>
                                             </ul>
                                         )}
                                     </li>
