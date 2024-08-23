@@ -217,7 +217,7 @@ const Profile = () => {
                                         {showDropdown && (
                                             <ul className="dropdown-menu">
                                                 <li><a href="/Profile">Profile</a></li>
-                                                <li><a href="#" onClick={handleLogout}>Déconnexion</a></li>
+                                                <li><a href="#">Déconnexion</a></li>
                                             </ul>
                                         )}
                                     </li>

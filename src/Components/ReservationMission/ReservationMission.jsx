@@ -71,7 +71,7 @@ const ReservationMission = () => {
             try {
                 const response = await fetch("http://localhost:8087/api/collaborateur/");
                 if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
+                    throw new Error(HTTP error! Status: ${response.status});
                 }
                 const data = await response.json();
                 setCollaborateur(data);
@@ -99,7 +99,7 @@ const ReservationMission = () => {
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         if (name === "vehicule.vehiculeId") {
-            // Pour le champ matricule, mettez à jour `formData` correctement
+            // Pour le champ matricule, mettez à jour formData correctement
             setFormData(prevState => ({
                 ...prevState,
                 vehicule: { vehiculeId: value }
@@ -116,22 +116,22 @@ const ReservationMission = () => {
         e.preventDefault();
         try {
            
-            const response = await axios.put(`${BASEURL}/${selectedMission.id}`, formData);
+            const response = await axios.put(${BASEURL}/${selectedMission.id}, formData);
             if (oldMatricule && formData.vehicule.vehiculeId !== oldMatricule) {
-                await axios.put(`http://localhost:8087/api/vehicule/${oldMatricule}/status`, {
+                await axios.put(http://localhost:8087/api/vehicule/${oldMatricule}/status, {
                     status: 0,
                 });
     
-                await axios.put(`http://localhost:8087/api/vehicule/${formData.vehicule.vehiculeId}/status`, {
+                await axios.put(http://localhost:8087/api/vehicule/${formData.vehicule.vehiculeId}/status, {
                     status: 1,
                 });
             } else if (formData.vehicule.vehiculeId !== oldMatricule) {
-                await axios.put(`http://localhost:8087/api/vehicule/${formData.vehicule.vehiculeId}/status`, {
+                await axios.put(http://localhost:8087/api/vehicule/${formData.vehicule.vehiculeId}/status, {
                     status: 1,
                 });
             }
     
-            const missionsResponse = await axios.get(`${BASEURL}`);
+            const missionsResponse = await axios.get(${BASEURL});
             setMissions(missionsResponse.data);
             try {
                 const response = await fetch("http://localhost:8087/api/");
@@ -188,7 +188,7 @@ const ReservationMission = () => {
     };
     async function updateVehicleStatus(vehicleId, status) {
         try {
-            const response = await axios.put(`http://localhost:8087/api/vehicule/${vehicleId}/status`, {
+            const response = await axios.put(http://localhost:8087/api/vehicule/${vehicleId}/status, {
                 status: status
             });
             console.log('Vehicle status updated:', response.data);
@@ -248,7 +248,7 @@ const ReservationMission = () => {
                     text: "Votre Mission a été supprimé.",
                     icon: "success"
                 });
-            const response = await axios.get(`${BASEURL}`);
+            const response = await axios.get(${BASEURL});
             setMissions(response.data);
             try {
                 const response = await fetch("http://localhost:8087/api/");
@@ -308,7 +308,7 @@ const ReservationMission = () => {
     };
     useEffect(() => {
         const fetchMissions = async () => {
-            const response = await axios.get(`${BASEURL}`);
+            const response = await axios.get(${BASEURL});
             setMissions(response.data);
         };
         fetchMissions();
@@ -347,7 +347,7 @@ const ReservationMission = () => {
                 });
                 setLongitude('');
                 setLatitude('');
-                const missionsResponse = await axios.get(`${BASEURL}`);
+                const missionsResponse = await axios.get(${BASEURL});
                 setMissions(missionsResponse.data);
                 try {
                     const response = await fetch("http://localhost:8087/api/");
@@ -426,7 +426,7 @@ const ReservationMission = () => {
                 </div>
             </header>
 
-            <section className="breadcrumb-section" style={{ backgroundImage: `url(${OCPHISTO})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+            <section className="breadcrumb-section" style={{ backgroundImage: url(${OCPHISTO}), backgroundSize: 'cover', backgroundPosition: 'center' }}>
                 <div className="container">
                     <div className="row">
                         <div className="col-lg-12 text-center">
@@ -442,8 +442,8 @@ const ReservationMission = () => {
                 <div className="container">
                     <div className="row">
                         <div className="col-lg-12">
-                            <div className="shoping__cart__table__Mission-container">
-                                <table className="shoping__cart__table__Mission">
+                            <div className="shoping_carttable_Mission-container">
+                                <table className="shoping_carttable_Mission">
                                     <thead>
                                         <tr>
                                             <th className="shoping__Mission">Titre</th>
@@ -460,19 +460,19 @@ const ReservationMission = () => {
                                     <tbody>
                                     {missions.map(mission => (
                                         <tr key={mission.id}>
-                                            <td className="shoping__cart__item">
+                                            <td className="shoping_cart_item">
                                                 <h5 name="nompre_collaborateur">{mission.titre}</h5>
                                             </td>
-                                            <td className="shoping__cart__description">
+                                            <td className="shoping_cart_description">
                                             {mission.description}
                                             </td>
-                                            <td className="shoping__cart__tel">{mission.mission_longitude}</td>
+                                            <td className="shoping_cart_tel">{mission.mission_longitude}</td>
                                             <td>{mission.mission_latitude}</td>
                                             <td>{mission.dateDebut}</td>
                                             <td>{mission.dateFin}</td>
                                             <td>{mission.collaborateur.nom} {mission.collaborateur.prenom}</td>
                                             <td>{mission.vehicule.immatriculation}</td>
-                                            <td className="shoping__cart__item__close">
+                                            <td className="shoping_cartitem_close">
                                                 <FaTrashAlt
                                                     style={{ cursor: 'pointer', fontSize: '18px', color: '#b2b2b2' }}
                                                     onClick={() => {
@@ -500,7 +500,7 @@ const ReservationMission = () => {
                     </div>
                     <div className="row">
                         <div className="col-lg-12">
-                            <div className="shoping__cart__btns">
+                            <div className="shoping_cart_btns">
                                 <button onClick={toggleModal} className="btn btn-primary custom-btn-primary" style={{ backgroundColor: '#7fad39' }}>
                                     Ajouter Mission
                                 </button>
