@@ -1,0 +1,133 @@
+.shoping-cart {
+	padding-top: 80px;
+	padding-bottom: 80px;
+}
+.shoping__cart__table {
+	margin-bottom: 30px;
+}
+
+.shoping__cart__table table {
+	width: 100%;
+	text-align: center;
+}
+
+.shoping__cart__table table thead tr {
+	border-bottom: 1px solid #ebebeb;
+}
+
+.shoping__cart__table table thead th {
+	font-size: 20px;
+	font-weight: 700;
+	color: #1c1c1c;
+	padding-bottom: 20px;
+}
+
+.shoping__cart__table table thead th.shoping__Collab {
+	text-align: left;
+    
+}
+
+
+
+.shoping__cart__table table tbody tr td {
+	padding-top: 30px;
+	padding-bottom: 30px;
+	border-bottom: 1px solid #ebebeb;
+}
+
+.shoping__cart__table table tbody tr td.shoping__cart__item {
+	width: 400px;
+	text-align: left;
+}
+
+.shoping__cart__table table tbody tr td.shoping__cart__item img {
+	display: inline-block;
+	margin-right: 20px;
+    width: 100px;
+}
+
+.shoping__cart__table table tbody tr td.shoping__cart__item h5 {
+	color: #1c1c1c;
+	display: inline-block;
+}
+
+.shoping__cart__table table tbody tr td.shoping__cart__cin {
+	font-size: 18px;
+	color: #1c1c1c;
+	font-weight: 700;
+	width: 100px;
+}
+
+.shoping__cart__table table tbody tr td.shoping__cart__date{
+    font-size: 18px;
+	color: #1c1c1c;
+	font-weight: 700;
+}
+.shoping__cart__table table tbody tr td.shoping__cart__service {
+	font-size: 18px;
+	color: #1c1c1c;
+	font-weight: 700;
+}
+.shoping__cart__table table tbody tr td.shoping__cart__role{
+	font-size: 18px;
+	color: #1c1c1c;
+	font-weight: 700;
+}
+
+.shoping__cart__table table tbody tr td.shoping__cart__item__close {
+	text-align: right;
+}
+
+
+.shoping__cart__table table tbody tr td.shoping__cart__tel {
+    color: #1c1c1c;
+    font-weight: 700;
+    font-size: 18px;
+}
+
+.shoping__cart__btns {
+    text-align: right;
+    margin-top: 20px;
+}
+
+.shoping__cart__btns .custom-btn-primary {
+    color: #fff;
+    background-color: #7fad39;
+    border-color: #7fad39;
+}
+
+.shoping__cart__btns .custom-btn-primary:hover {
+    background-color: #6e9834;
+    border-color: #6e9834;
+}
+.shoping__cart__table{
+    max-height: 400px; /* Adjust the height as per your design */
+    overflow-y: auto;
+    padding-right: 50px;
+}
+.modal-title{
+	color:  #7fad39;
+	font-weight: bold;
+}
+label{
+	margin-left: 4px;
+	color:  #7fad39;
+	font-weight: bold;
+}
+.image{
+	border-radius: 50%;
+    width: 100px; /* Adjust size as needed */
+    height: 100px; /* Adjust size as needed */
+    object-fit: cover;
+}
+.ajout{ 
+	background-color: #7fad39;
+	 margin-top: -80px;
+	}
+	.close-icon {
+		cursor: pointer;
+		font-size: 24px;
+		margin-top: 5px;
+		margin-right: 2px;
+		margin-left: auto;
+	}

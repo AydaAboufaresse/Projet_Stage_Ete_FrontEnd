@@ -1,0 +1,63 @@
+
+.form-control:focus {
+    box-shadow: none;
+    border-color: #7fad39
+}
+
+.profile-button {
+    background: #7fad39;
+    box-shadow: none;
+    border: none;
+    color: #fff;
+}
+
+.profile-button:hover {
+    background: #6e9834;
+    color: #fff;
+}
+
+.profile-button:focus {
+    background: #6e9834;
+    box-shadow: none;
+    color: #fff;
+}
+
+.profile-button:active {
+    background: #6e9834 !important; /* Change le fond du bouton quand il est cliqué */
+    box-shadow: none !important;
+}
+
+.back:hover {
+    color: #6e9834;
+    cursor: pointer
+
+}
+
+.labels {
+    font-size: 11px
+}
+
+.add-experience:hover {
+    background: #7fad39;
+    color: #fff;
+    border: solid 1px #7fad39
+}
+.image-profile{
+    margin-top: 10px;
+    background: #7fad39;
+    color: #fff;
+}
+.image-profile:focus{
+    background: #6e9834;
+    box-shadow: none
+}
+.image-profile:active {
+    background: #6e9834 !important; /* Change le fond du bouton quand il est cliqué */
+    box-shadow: none !important;
+}
+
+.image-profile:hover {
+    color: #fff;
+    cursor: pointer;
+    background: #6e9834;
+}

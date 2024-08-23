@@ -1,0 +1,42 @@
+/* Mission.css */
+
+.shoping__cart__table__Mission-container {
+    max-width: 100%;
+    max-height: 400px; /* Adjust the height as necessary */
+    overflow: auto;
+}
+
+.shoping__cart__table__Mission {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.shoping__cart__table__Mission th,
+.shoping__cart__table__Mission td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 150px; /* Adjust as necessary */
+}
+
+.shoping__cart__table__Mission th {
+    text-align: left;
+    padding: 20px ;
+    font-weight: bold;
+}
+
+.shoping__cart__table__Mission td {
+    padding: 20px;
+    font-weight: bold;
+    border-top: 1px solid #ddd;
+}
+
+.shoping__cart__table__Mission h5 {
+    font-size: 18px;
+    margin: 0; /* Remove any margin to keep text aligned */
+}
+
+.shoping__cart__table__Mission .shoping__cart__description {
+    font-size: 15px;
+    font-weight: bold;
+}
