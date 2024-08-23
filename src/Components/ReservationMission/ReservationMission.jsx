@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import OCPLogo from '../Assets/OCP_Group.png';
-import './Mission.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { BsBellFill, BsChevronDown } from "react-icons/bs";
 import { FaTrashAlt, FaRegEdit } from "react-icons/fa";
@@ -15,86 +14,10 @@ import L from 'leaflet';
 import { Page, Text, View, Document, StyleSheet, BlobProvider,Image } from "@react-pdf/renderer";
 import axios from 'axios';
 import Swal from 'sweetalert2';
-import { useNavigate } from "react-router-dom";
 import { BASEURL, saveMission, updateMission, deleteMission, getAllMissions } from '../axios/missionRequests';
-const styles = StyleSheet.create({
-    page: {
-        flexDirection: 'column',
-        padding: 20,
-        backgroundColor: '#ffffff',
-    },
-    header: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 30, 
-    },
-    logo: {
-        width: 120, 
-        height: 'auto',
-    },
-    title: {
-        fontSize: 20,
-        textAlign: 'center',
-        marginBottom: 20,
-        fontWeight: 'bold',
-        color: '#888888', 
-        paddingBottom: 10,
-    },
-    section: {
-        margin: 10,
-        padding: 15, 
-        border: '1px solid #eee',
-        borderRadius: 5,
-    },
-    paragraph: {
-        marginBottom: 12,
-        fontSize: 12,
-        lineHeight: 1.5,
-    },
-    signature: {
-        marginTop: 30,
-        fontSize: 12,
-        fontStyle: 'italic',
-        textAlign: 'center',
-    },
-    date: {
-        fontSize: 12,
-        color: '#888888',
-    },
-});
-
-const MyDocument = ({ mission }) => (
-    <Document>
-        <Page size="A4" style={styles.page}>
-            <View style={styles.header}>
-                <Image
-                    src={OCPLogo}
-                    style={styles.logo}
-                />
-                <Text style={styles.date}>Le : {new Date().toLocaleDateString()}</Text>
-            </View>
-            <Text style={styles.title}>Rapport de Mission</Text>
-            <View style={styles.section}>
-                <Text style={styles.paragraph}>
-                    Cette mission avait pour but de {mission.titre}. Elle a été menée du {mission.dateDebut} au {mission.dateFin} et a été relue par {mission.collaborateur.nom} {mission.collaborateur.prenom}.
-                </Text>
-                <Text style={styles.paragraph}>
-                    Au cours de cette mission, nous avons recueilli des données essentielles et analysé les processus en place. La mission a été effectuée à l'emplacement géographique suivant : longitude {mission.mission_longitude} et latitude {mission.mission_latitude}. Le véhicule utilisé pour cette mission était immatriculé {mission.vehicule.immatriculation}.
-                </Text>
-                <Text style={styles.paragraph}>
-                    Nous avons mis en œuvre des recommandations visant à {mission.description}. Ce rapport présente les principales activités réalisées, les résultats obtenus, ainsi que les recommandations pour les prochaines étapes.
-                </Text>
-            </View>
-            <Text style={styles.signature}>
-                Signature : ______________________
-            </Text>
-        </Page>
-    </Document>
-);
 
 
-const Mission = () => {
+const ReservationMission = () => {
     const [showDropdown, setShowDropdown] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
@@ -107,7 +30,6 @@ const Mission = () => {
     const [oldMatricule, setOldMatricule] = useState(null);
     const [showDetailsPopup, setShowDetailsPopup] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
-    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         dateDebut: '',
         dateFin: '',
@@ -130,11 +52,6 @@ const Mission = () => {
         mission_longitude: '',
         mission_latitude: ''
     });
-    const handleLogout = () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        navigate("/");
-    };
     useEffect(() => {
         async function fetchVehicles() {
             try {
@@ -240,13 +157,6 @@ const Mission = () => {
                 icon: "error"
             });
         }
-    };
-    const handleCollaborateurChange = (e) => {
-        const selectedCollaborateur = e.target.value;
-        setMission(prevState => ({
-            ...prevState,
-            collaborateur: { id: selectedCollaborateur }
-        }));
     };
 
     const handleMatriculeChange = async (e) => {
@@ -483,11 +393,8 @@ const Mission = () => {
                         <div className="col-lg-6">
                             <nav className="header__menu d-flex justify-content-center">
                                 <ul className="d-flex mb-0">
-                                    <li className="active"><a href="/Home">Home</a></li>
-                                    <li><a href="/Mission">Missions</a></li>
-                                    <li><a href="/Collaborateur">Collaborateurs</a></li>
-                                    <li><a href="/Vehicule">Vehicules</a></li>
-                                    <li><a href="/Reservation">Reservation</a></li>
+                                    <li ><a href="/HomeCollaborateur">Missions</a></li>
+                                    <li className="active"><a href="/ReservationMission">Reservation</a></li>
                                 </ul>
                             </nav>
                         </div>
@@ -507,8 +414,8 @@ const Mission = () => {
                                         </a>
                                         {showDropdown && (
                                             <ul className="dropdown-menu">
-                                                <li><a href="/Profile">Profile</a></li>
-                                                <li><a href="#" onClick={handleLogout}>Déconnexion</a></li>
+                                                <li><a href="/ProfileCollaborateur">Profile</a></li>
+                                                <li><a href="#">Déconnexion</a></li>
                                             </ul>
                                         )}
                                     </li>
@@ -524,7 +431,7 @@ const Mission = () => {
                     <div className="row">
                         <div className="col-lg-12 text-center">
                             <div className="breadcrumb__text">
-                                <h2>Missions OCP GROUP</h2>
+                                <h2>Réservation</h2>
                             </div>
                         </div>
                     </div>
@@ -578,13 +485,7 @@ const Mission = () => {
                                                         toggleEditModal(mission);
                                                     }}
                                                 />
-                                                <BlobProvider document={<MyDocument mission={mission} />}>
-                                                {({ url }) => (
-                                                    <a href={url} target="_blank" rel="noopener noreferrer" download="mission_details.pdf">
-                                                        <FaFilePdf style={{ cursor: 'pointer', marginLeft: '10px', fontSize: '18px', color: '#b2b2b2' }}/>
-                                                    </a>
-                                                    )}
-                                                </BlobProvider>
+                                                
                                                 <TbListDetails
                                                     style={{ cursor: 'pointer', marginLeft: '10px', fontSize: '18px', color: '#b2b2b2' }}
                                                     onClick={() => toggleDetailsPopup(mission)}
@@ -703,21 +604,14 @@ const Mission = () => {
                             {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
                         </div>
                         <div className="form-group">
-                            <select
-                                className="form-control"
-                                name="collaborator"
-                                value={mission.id}
-                                onChange={handleCollaborateurChange}
-                                required
-                            >
-                                <option value="">Choisir un Collaborateur</option>
-                                {collaborateurs.map(collaborateur => (
-                                    <option key={collaborateur.id}value={collaborateur.id} >
-                                        {collaborateur.nom} {collaborateur.prenom}
-                                    </option>
-                                ))}
-                            </select>
-                        </div><div className="form-group">
+                        <input
+    type="text"
+    className="form-control"
+    name="collaborator" 
+    value={mission.collaborateur.nom}
+    required
+/> </div>
+                        <div className="form-group">
     <select
         className="form-control"
         name="matricule"
@@ -835,21 +729,15 @@ const Mission = () => {
                                 onChange={handleInputChange}
                             />
                         </div>
+                                   
                                     <div className="form-group">
-                                    <select
-            className="form-control"
-            name="collaborateur.id"
-            value={formData.collaborateur.id}
-            onChange={handleInputChangecollab}
-        >
-            <option value="">Choisir Collaborateur</option>
-            {collaborateurs.map(collaborateur => (
-                <option key={collaborateur.id} value={collaborateur.id}>
-                    {collaborateur.nom} {collaborateur.prenom}
-                </option>
-            ))}
-        </select>
-                                    </div>
+                        <input
+    type="text"
+    className="form-control"
+    name="collaborateur.id"  
+    value={formData.collaborateur.id }
+    required
+/> </div>
                                     <div className="form-group">
         <select
             className="form-control"
@@ -909,4 +797,4 @@ const Mission = () => {
     
 };
 
-export default Mission;
+export default ReservationMission;

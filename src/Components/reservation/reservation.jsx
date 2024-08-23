@@ -8,6 +8,7 @@ import avatar from '../Assets/pro.png';
 import './resevation.css';
 import L from "leaflet";
 import OCPHISTO from '../Assets/Train.jpg';
+import { useNavigate } from "react-router-dom";
 
 const DefaultIcon = L.icon({
     iconUrl: require('../Assets/live-location.png'), 
@@ -19,7 +20,8 @@ L.Marker.prototype.options.icon = DefaultIcon;
 const Reservation = () => {
     const [showDropdown, setShowDropdown] = useState(false);
     const [showCategories, setShowCategories] = useState(false);
-    const position = [31.7917, -7.0926]; // Coordinates for Morocco
+    const position = [31.7917, -7.0926]; 
+    const navigate = useNavigate();
 
     const toggleDropdown = () => {
         setShowDropdown(!showDropdown);
@@ -27,6 +29,12 @@ const Reservation = () => {
 
     const toggleCategories = () => {
         setShowCategories(!showCategories);
+    };
+
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        navigate("/");
     };
 
     return (
@@ -67,7 +75,7 @@ const Reservation = () => {
                                         {showDropdown && (
                                             <ul className="dropdown-menu">
                                                 <li><a href="/Profile">Profile</a></li>
-                                                <li><a href="#">Déconnexion</a></li>
+                                                <li><a onClick={handleLogout}>Déconnexion</a></li>
                                             </ul>
                                         )}
                                     </li>

@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import './LoginForm.css';
 import { FaUserAlt } from "react-icons/fa";
 import { MdOutlinePassword } from "react-icons/md";
 import OCPLogo from '../Assets/OCP-logo.png';
@@ -7,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 import Swal from 'sweetalert2';
 
-const LoginForm = () => {
+const LoginCollaborateur = () => {
     const navigate = useNavigate();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -38,7 +37,7 @@ const LoginForm = () => {
             } = response.data;
             console.log('Type Utilisateur:', type_utilisateur);
 
-            if (type_utilisateur !== 'Responsable') {
+            if (type_utilisateur !== 'Collaborateur') {
                 Swal.fire({
                     icon: 'error',
                     title: 'Accès refusé',
@@ -46,7 +45,6 @@ const LoginForm = () => {
                 });
                 return; 
             }
-
 
             localStorage.setItem('token', token);
             localStorage.setItem('user', JSON.stringify({
@@ -65,7 +63,7 @@ const LoginForm = () => {
                 imageUrl
             }));
 
-            navigate("/Home");
+            navigate("/HomeCollaborateur");
         } catch (error) {
             if (error.response) {
                 Swal.fire({
@@ -124,4 +122,5 @@ const LoginForm = () => {
     );
 }
 
-export default LoginForm;
+
+export default LoginCollaborateur;
