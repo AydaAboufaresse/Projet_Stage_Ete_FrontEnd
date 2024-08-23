@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import OCPLogo from '../Assets/OCP_Group.png';
-import './profile.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { BsBellFill, BsChevronDown } from "react-icons/bs";
 import avatar from '../Assets/pro.png';
@@ -10,7 +9,7 @@ import axios from 'axios';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 
-const Profile = () => {
+const ProfileCollaborateur = () => {
     const navigate = useNavigate();
     const [showDropdown, setShowDropdown] = useState(false);
     const [userData, setUserData] = useState({
@@ -37,7 +36,7 @@ const Profile = () => {
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (!token) {
-            navigate('/');
+            navigate('/LoginCollaborateur');
         } else {
             const username = JSON.parse(localStorage.getItem('user')).username;
             axios.get(`http://localhost:8087/api/utilisateur/username/${username}`)
@@ -53,7 +52,7 @@ const Profile = () => {
     const handleLogout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
-        navigate("/");
+        navigate("/LoginCollaborateur");
     };
 
     const handleChange = (e) => {
@@ -181,7 +180,7 @@ const Profile = () => {
 
     return (
         <div>
-             <header className="header">
+            <header className="header">
                 <div className="container">
                     <div className="row">
                         <div className="col-lg-3">
@@ -191,12 +190,9 @@ const Profile = () => {
                         </div>
                         <div className="col-lg-6">
                             <nav className="header__menu d-flex justify-content-center">
-                                <ul className="d-flex mb-0">
-                                    <li><a href="/Home">Home</a></li>
-                                    <li><a href="/Mission">Missions</a></li>
-                                    <li><a href="/Collaborateur">Collaborateurs</a></li>
-                                    <li><a href="/Vehicule">Vehicules</a></li>
-                                    <li><a href="/Reservation">Reservation</a></li>
+                            <ul className="d-flex mb-0">
+                                    <li ><a href="/HomeCollaborateur">Missions</a></li>
+                                    <li ><a href="/Reservation">Reservation</a></li>
                                 </ul>
                             </nav>
                         </div>
@@ -398,4 +394,5 @@ const Profile = () => {
     );
 };
 
-export default Profile;
+
+export default ProfileCollaborateur;
