@@ -15,6 +15,7 @@ import L from 'leaflet';
 import { Page, Text, View, Document, StyleSheet, BlobProvider,Image } from "@react-pdf/renderer";
 import axios from 'axios';
 import Swal from 'sweetalert2';
+import { useNavigate } from "react-router-dom";
 import { BASEURL, saveMission, updateMission, deleteMission, getAllMissions } from '../axios/missionRequests';
 const styles = StyleSheet.create({
     page: {
@@ -106,6 +107,7 @@ const Mission = () => {
     const [oldMatricule, setOldMatricule] = useState(null);
     const [showDetailsPopup, setShowDetailsPopup] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         dateDebut: '',
         dateFin: '',
@@ -128,6 +130,11 @@ const Mission = () => {
         mission_longitude: '',
         mission_latitude: ''
     });
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        navigate("/");
+    };
     useEffect(() => {
         async function fetchVehicles() {
             try {
@@ -501,7 +508,7 @@ const Mission = () => {
                                         {showDropdown && (
                                             <ul className="dropdown-menu">
                                                 <li><a href="/Profile">Profile</a></li>
-                                                <li><a href="#">Déconnexion</a></li>
+                                                <li><a href="#" onClick={handleLogout}>Déconnexion</a></li>
                                             </ul>
                                         )}
                                     </li>

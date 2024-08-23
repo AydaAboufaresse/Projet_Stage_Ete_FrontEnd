@@ -33,8 +33,20 @@ const LoginForm = () => {
                 email,
                 genre,
                 adress,
-                imageUrl
+                imageUrl,
+                type_utilisateur
             } = response.data;
+            console.log('Type Utilisateur:', type_utilisateur);
+
+            if (type_utilisateur !== 'Responsable') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Accès refusé',
+                    text: 'Vous n\'êtes pas autorisé à accéder à cette application',
+                });
+                return; 
+            }
+
 
             localStorage.setItem('token', token);
             localStorage.setItem('user', JSON.stringify({

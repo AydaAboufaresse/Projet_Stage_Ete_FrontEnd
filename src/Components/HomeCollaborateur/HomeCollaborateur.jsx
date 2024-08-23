@@ -11,95 +11,50 @@ import moment from 'moment';
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
-import { Page, Text, View, Document, StyleSheet, BlobProvider,Image } from "@react-pdf/renderer";
+import { Page, Text, View, Document, StyleSheet, BlobProvider, Image } from "@react-pdf/renderer";
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { BASEURL, saveMission, updateMission, deleteMission, getAllMissions } from '../axios/missionRequests';
+import { useNavigate } from "react-router-dom";
 
 const HomeCollaborateur = () => {
     const [showDropdown, setShowDropdown] = useState(false);
-    const [showModal, setShowModal] = useState(false);
-    const [showEditModal, setShowEditModal] = useState(false);
-    const [longitude, setLongitude] = useState('');
-    const [latitude, setLatitude] = useState('');
-    const [collaborateurs, setCollaborateur] = useState('');
-    const [selectedMission, setSelectedMission] = useState(null);
-    const [vehicles, setVehicles] = useState([]);
-    const [missions, setMissions] = useState([]);
-    const [oldMatricule, setOldMatricule] = useState(null);
     const [showDetailsPopup, setShowDetailsPopup] = useState(false);
-    const [errorMessage, setErrorMessage] = useState('');
-    const [formData, setFormData] = useState({
-        dateDebut: '',
-        dateFin: '',
-        description: '',
-        statut:'',
-        titre: '',
-        collaborateur: {id : ""},
-        vehicule: {vehiculeId : ""},
-        mission_longitude: '',
-        mission_latitude: ''
-    });
-    const [mission, setMission] = useState({
-        dateDebut: '',
-        dateFin: '',
-        description: '',
-        statut:'',
-        titre: '',
-        collaborateur: {id : ""},
-        vehicule: {vehiculeId : ""},
-        mission_longitude: '',
-        mission_latitude: ''
-    });
+    const [missions, setMissions] = useState([]);
+    const [selectedMission, setSelectedMission] = useState(null);
+    const navigate = useNavigate();
+
     useEffect(() => {
-        async function fetchVehicles() {
-            try {
-                const response = await fetch("http://localhost:8087/api/");
-                const data = await response.json();
-                const availableVehicles = data.filter(vehicle => vehicle.status !== 1); 
-                setVehicles(availableVehicles);
-            } catch (error) {
-                console.error("Error fetching vehicles:", error);
-            }
+        const token = localStorage.getItem('token');
+        if (!token) {
+            navigate('/LoginCollaborateur');
+        } else {
+            const id = JSON.parse(localStorage.getItem('user')).id;
+            axios.get(http://localhost:8087/api/missions/collaborateur/${id})
+                .then(response => {
+                    setMissions(response.data);
+                })
+                .catch(err => {
+                    console.error(err);
+                });
         }
-        fetchVehicles();
-    }, []);
-    
-    useEffect(() => {
-        async function fetchCollaborateurs() {
-            try {
-                const response = await fetch("http://localhost:8087/api/collaborateur/");
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                const data = await response.json();
-                setCollaborateur(data);
-            } catch (error) {
-                console.error("Error fetching collaborateurs:", error);
-            }
-        }
-        fetchCollaborateurs();
-    }, []);
+    }, [navigate]);
+
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        navigate("/LoginCollaborateur");
+    };
 
     const toggleDetailsPopup = (mission) => {
-        setMission(mission);
+        setSelectedMission(mission);
         setShowDetailsPopup(!showDetailsPopup);
     };
-    
+
     const toggleDropdown = () => {
         setShowDropdown(!showDropdown);
     };
 
-  
-    useEffect(() => {
-        const fetchMissions = async () => {
-            const response = await axios.get(`${BASEURL}`);
-            setMissions(response.data);
-        };
-        fetchMissions();
-    }, []);
-
-  
     return (
         <div>
             <header className="header">
@@ -135,7 +90,7 @@ const HomeCollaborateur = () => {
                                         {showDropdown && (
                                             <ul className="dropdown-menu">
                                                 <li><a href="/ProfileCollaborateur">Profile</a></li>
-                                                <li><a href="#">Déconnexion</a></li>
+                                                <li><a onClick={handleLogout}>Déconnexion</a></li>
                                             </ul>
                                         )}
                                     </li>
@@ -146,7 +101,7 @@ const HomeCollaborateur = () => {
                 </div>
             </header>
 
-            <section className="breadcrumb-section" style={{ backgroundImage: `url(${OCPHISTO})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+            <section className="breadcrumb-section" style={{ backgroundImage: url(${OCPHISTO}), backgroundSize: 'cover', backgroundPosition: 'center' }}>
                 <div className="container">
                     <div className="row">
                         <div className="col-lg-12 text-center">
@@ -162,89 +117,76 @@ const HomeCollaborateur = () => {
                 <div className="container">
                     <div className="row">
                         <div className="col-lg-12">
-                            <div className="shoping__cart__table__Mission-container">
-                                <table className="shoping__cart__table__Mission">
+                            <div className="shoping_carttable_Mission-container">
+                                <table className="shoping_carttable_Mission">
                                     <thead>
                                         <tr>
-                                            <th className="shoping__Mission">Titre</th>
+                                            <th>Titre</th>
                                             <th>Description</th>
-                                            <th>Mission longitude</th>
-                                            <th>Mission latitude</th>
-                                            <th>Date et heure debut</th>
-                                            <th>Date et heure fin</th>
-                                            <th>Collaborateur</th>
-                                            <th>Matricule</th>
-                                            <th></th>
+                                            <th>Mission Longitude</th>
+                                            <th>Mission Latitude</th>
+                                            <th>Date et Heure Debut</th>
+                                            <th>Date et Heure Fin</th>
+                                            <th>Statut</th>
+                                            <th>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                    {missions.map(mission => (
-                                        <tr key={mission.id}>
-                                            <td className="shoping__cart__item">
-                                                <h5 name="nompre_collaborateur"></h5>
-                                            </td>
-                                            <td className="shoping__cart__description">
-                                            
-                                            </td>
-                                            <td className="shoping__cart__tel"></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td className="shoping__cart__item__close">
+                                        {missions.map(mission => (
+                                            <tr key={mission.id}>
+                                                <td>{mission.titre}</td>
+                                                <td>{mission.description}</td>
+                                                <td>{mission.mission_longitude}</td>
+                                                <td>{mission.mission_latitude}</td>
+                                                <td>{mission.dateDebut}</td>
+                                                <td>{mission.dateFin}</td>
+                                                <td>{mission.statut}</td>
+                                                <td>
                                                     <TbListDetails
                                                         style={{ cursor: 'pointer', fontSize: '18px', color: '#b2b2b2' }}
                                                         onClick={() => toggleDetailsPopup(mission)}
                                                     />
                                                     <button className="btn btn-success" style={{ marginLeft: '5px', padding: '4px 8px', fontSize: '9px' }}>Mission Realiser</button>
-                                            </td>
-                                        
-                                        </tr>
-                                     ))}
+                                                </td>
+                                            </tr>
+                                        ))}
                                     </tbody>
                                 </table>
                             </div>
                         </div>
                     </div>
-                    
                 </div>
             </section>
 
-           
-            {showDetailsPopup && (
-    <div className="modal fade show" style={{ display: 'block' }}>
-        <div className="modal-dialog">
-            <div className="modal-content">
-                <div className="modal-header">
-                    <h5 className="modal-title">Détails Mission</h5>
-                </div>
-                <div className="modal-body">
-                    {mission && ( 
-                        <div className="details-section">
-                            <p><strong>Titre :</strong></p>
-                            <p><strong>Description :</strong> </p>
-                            <p><strong>Date Debut :</strong> </p>
-                            <p><strong>Date Fin :</strong> </p>
-                            <p><strong>Latitude :</strong> </p>
-                            <p><strong>Longtitude :</strong> </p>
-                            <p><strong>Statut :</strong> </p>
-                            <p><strong>Matricule :</strong> </p>
-                            <p><strong>Nom & Prenom du Collaborateur :</strong> </p>
+            {showDetailsPopup && selectedMission && (
+                <div className="modal fade show" style={{ display: 'block' }}>
+                    <div className="modal-dialog">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h5 className="modal-title">Détails Mission</h5>
+                            </div>
+                            <div className="modal-body">
+                                <div className="details-section">
+                                    <p><strong>Titre :</strong> {selectedMission.titre}</p>
+                                    <p><strong>Description :</strong> {selectedMission.description}</p>
+                                    <p><strong>Date Debut :</strong> {selectedMission.dateDebut}</p>
+                                    <p><strong>Date Fin :</strong> {selectedMission.dateFin}</p>
+                                    <p><strong>Latitude :</strong> {selectedMission.mission_latitude}</p>
+                                    <p><strong>Longitude :</strong> {selectedMission.mission_longitude}</p>
+                                    <p><strong>Statut :</strong> {selectedMission.statut}</p>
+                                    <p><strong>Matricule :</strong> {selectedMission.vehicule.immatriculation}</p>
+                                    <p><strong>Nom & Prenom du Collaborateur :</strong> {selectedMission.collaborateur.nom} {selectedMission.collaborateur.prenom}</p>
+                                </div>
+                            </div>
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-secondary" onClick={() => toggleDetailsPopup(null)}>Fermer</button>
+                            </div>
                         </div>
-                    )}
+                    </div>
                 </div>
-                <div className="modal-footer">
-                    <button type="button" className="btn btn-secondary" onClick={() => toggleDetailsPopup(null)}>Fermer</button>
-                    
-                </div>
-            </div>
-        </div>
-    </div>
-)}
+            )}
         </div>
     );
-    
 };
 
 export default HomeCollaborateur;
