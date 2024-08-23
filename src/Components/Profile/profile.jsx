@@ -190,8 +190,8 @@ const Profile = () => {
                             </div>
                         </div>
                         <div className="col-lg-6">
-                            <nav className="header__menu">
-                                <ul>
+                            <nav className="header__menu d-flex justify-content-center">
+                                <ul className="d-flex mb-0">
                                     <li><a href="/Home">Home</a></li>
                                     <li><a href="/Mission">Missions</a></li>
                                     <li><a href="/Collaborateur">Collaborateurs</a></li>
@@ -217,7 +217,7 @@ const Profile = () => {
                                         {showDropdown && (
                                             <ul className="dropdown-menu">
                                                 <li><a href="/Profile">Profile</a></li>
-                                                <li><a href="#" onClick={handleLogout}>Déconnexion</a></li>
+                                                <li><a href="#">Déconnexion</a></li>
                                             </ul>
                                         )}
                                     </li>
