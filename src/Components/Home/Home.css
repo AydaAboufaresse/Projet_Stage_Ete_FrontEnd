@@ -708,4 +708,24 @@ hero__search__form form .hero__search__categories:after {
 	left: auto;
 	right: -35px;
 }
+.leaflet-routing-container {
+    background-color: #f0f0f0; /* Changez cette couleur en fonction de vos préférences */
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.leaflet-routing-alt {
+    background-color: #ffffff;
+    margin-bottom: 10px;
+}
+
+.leaflet-routing-instructions {
+    font-family: Arial, sans-serif;
+    color: #333;
+}
+
+.leaflet-routing-instruction-sign {
+    display: none; /* Masque les signes d'instruction si vous ne les voulez pas */
+}
 

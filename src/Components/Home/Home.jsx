@@ -9,9 +9,11 @@ import avatar from '../Assets/pro.png';
 import L from "leaflet";
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
+import 'leaflet-routing-machine';
+import Swal from 'sweetalert2';
 
 const DefaultIcon = L.icon({
-    iconUrl: require('../Assets/live-location.png'), 
+    iconUrl: require('../Assets/live-location.png'),
     iconSize: [41, 41],
 });
 
@@ -20,28 +22,47 @@ L.Marker.prototype.options.icon = DefaultIcon;
 const Home = () => {
     const [showDropdown, setShowDropdown] = useState(false);
     const [showCategories, setShowCategories] = useState(false);
-    const [missions, setMissions] = useState([]); 
-    const [selectedMission, setSelectedMission] = useState(null); 
-    const [searchTerm, setSearchTerm] = useState(""); 
+    const [missions, setMissions] = useState([]);
+    const [selectedMission, setSelectedMission] = useState(null);
+    const [searchTitle, setSearchTitle] = useState("");
     const navigate = useNavigate();
-    const mapRef = useRef(); 
-    const defaultPosition = [31.7917, -7.0926]; 
+    const mapRef = useRef();
+    const routingControlRef = useRef(null);
+    const markersRef = useRef({});
 
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (!token) {
             navigate('/');
         } else {
-            fetchMissions(); 
+            fetchMissions();
         }
     }, [navigate]);
 
     const fetchMissions = async () => {
         try {
-            const response = await axios.get('http://localhost:8087/api/missions'); 
-            setMissions(response.data); 
+            const response = await axios.get('http://localhost:8087/api/missions');
+            setMissions(response.data);
         } catch (error) {
             console.error("Error fetching missions", error);
+        }
+    };
+
+    const searchMissions = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await axios.get(`http://localhost:8087/api/missions/search?title=${searchTitle}`);
+            if (response.data.length > 0) {
+                handleMissionClick(response.data[0]);
+            } else { Swal.fire({
+                title: 'Mission non trouvée',
+                text: "Aucune mission trouvée avec ce titre.",
+                icon: 'warning',
+                confirmButtonText: 'OK'
+            });
+            }
+        } catch (error) {
+            console.error("Error searching missions", error);
         }
     };
 
@@ -60,23 +81,37 @@ const Home = () => {
     };
 
     const handleMissionClick = (mission) => {
-        console.log("Mission details:", mission);
         setSelectedMission(mission);
-        
+
         if (mapRef.current) {
-            mapRef.current.setView([mission.mission_latitude, mission.mission_longitude], 13);
+            const map = mapRef.current;
+            map.setView([mission.mission_latitude, mission.mission_longitude], 13);
+
+            if (routingControlRef.current) {
+                routingControlRef.current.getPlan().setWaypoints([]);
+                map.removeControl(routingControlRef.current);
+            }
+
+            routingControlRef.current = L.Routing.control({
+                waypoints: [
+                    L.latLng(32.232157, -9.252964), // Starting point
+                    L.latLng(mission.mission_latitude, mission.mission_longitude) // Mission location
+                ],
+                show: false,
+                addWaypoints: false,
+                routeWhileDragging: true,
+                draggableWaypoints: false,
+                fitSelectedRoutes: true,
+                showAlternatives: false,
+            }).addTo(map);
+
+            // Open the popup for the selected mission
+            const marker = markersRef.current[mission.id];
+            if (marker) {
+                marker.openPopup();
+            }
         }
     };
-
-    // Fonction pour gérer le changement de l'entrée de recherche
-    const handleSearchChange = (event) => {
-        setSearchTerm(event.target.value);
-    };
-
-    // Filtrer les missions en fonction du terme de recherche
-    const filteredMissions = missions.filter(mission =>
-        mission.titre.toLowerCase().includes(searchTerm.toLowerCase())
-    );
 
     return (
         <div>
@@ -138,7 +173,7 @@ const Home = () => {
                                 </div>
                                 {showCategories && (
                                     <ul>
-                                        {filteredMissions.map(mission => ( // Utilisation des missions filtrées
+                                        {missions.map(mission => (
                                             <li key={mission.id} onClick={() => handleMissionClick(mission)}>
                                                 <a href="#">{mission.description}</a> 
                                             </li>
@@ -150,16 +185,16 @@ const Home = () => {
                         <div className="col-lg-9">
                             <div className="hero__search">
                                 <div className="hero__search__form">
-                                    <form action="#">
+                                    <form onSubmit={searchMissions}>
                                         <div className="hero__search__categories">
                                             Les Missions
                                             <span className="arrow_carrot-down"></span>
                                         </div>
                                         <input 
                                             type="text" 
-                                            placeholder="Rechercher par titre de mission..." 
-                                            value={searchTerm} 
-                                            onChange={handleSearchChange} 
+                                            placeholder="Où est situé le mission ?" 
+                                            value={searchTitle} 
+                                            onChange={(e) => setSearchTitle(e.target.value)} 
                                         />
                                         <button type="submit" className="site-btn">Recherche</button>
                                     </form>
@@ -167,8 +202,8 @@ const Home = () => {
                             </div>
                             <div className="map">
                                 <MapContainer 
-                                    center={selectedMission ? [selectedMission.mission_latitude, selectedMission.mission_longitude] : defaultPosition} 
-                                    zoom={selectedMission ? 13 : 10} 
+                                    center={[31.7917, -7.0926]} 
+                                    zoom={10} 
                                     scrollWheelZoom={false}
                                     ref={mapRef}
                                 >
@@ -176,45 +211,27 @@ const Home = () => {
                                         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                                     />
-                                    {filteredMissions.map(mission => ( // Utilisation des missions filtrées
+                                    {missions.map(mission => (
                                         <Marker 
                                             key={mission.id}
                                             position={[mission.mission_latitude, mission.mission_longitude]}
                                             eventHandlers={{
-                                                click: () => handleMissionClick(mission),
+                                                click: () => {
+                                                    handleMissionClick(mission);
+                                                },
                                             }}
+                                            ref={el => markersRef.current[mission.id] = el}
                                         >
                                             <Popup>
                                                 <strong>Titre:</strong> {mission.titre} <br />
                                                 <strong>Description:</strong> {mission.description} <br />
                                                 <strong>Date Debut:</strong> {new Date(mission.dateDebut).toLocaleDateString()} <br />
                                                 <strong>Date Fin:</strong> {new Date(mission.dateFin).toLocaleDateString()} <br />
-                                                <strong>Collaborateur:</strong> {mission.collaborateur 
-                ? `${mission.collaborateur.nom || 'N/A'} ${mission.collaborateur.prenom || 'N/A'}`
-                : 'Collaborateur pas disponible'
-            } <br />
+                                                <strong>Collaborateur:</strong>{mission.collaborateur ? ${mission.collaborateur.nom || 'N/A'} ${mission.collaborateur.prenom || 'N/A'} : 'Collaborateur pas disponible'} <br />
                                                 <strong>Matricule Véhicule:</strong> {mission.vehicule.immatriculation}
                                             </Popup>
                                         </Marker>
                                     ))}
-                                    {selectedMission && (
-                                        <Popup
-                                            position={[selectedMission.mission_latitude, selectedMission.mission_longitude]}
-                                            onClose={() => setSelectedMission(null)}
-                                        >
-                                            <div>
-                                                <strong>Titre:</strong> {selectedMission.titre} <br />
-                                                <strong>Description:</strong> {selectedMission.description} <br />
-                                                <strong>Date Debut:</strong> {new Date(selectedMission.dateDebut).toLocaleDateString()} <br />
-                                                <strong>Date Fin:</strong> {new Date(selectedMission.dateFin).toLocaleDateString()} <br />
-                                                <strong>Collaborateur:</strong> {selectedMission.collaborateur 
-                ? `${selectedMission.collaborateur.nom || 'N/A'} ${selectedMission.collaborateur.prenom || 'N/A'}`
-                : 'Collaborateur pas disponible'
-            } <br />
-                                                <strong>Matricule Véhicule:</strong> {selectedMission.vehicule.immatriculation}
-                                            </div>
-                                        </Popup>
-                                    )}
                                 </MapContainer>
                             </div>
                         </div>
