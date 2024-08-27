@@ -39,7 +39,7 @@ const ProfileCollaborateur = () => {
             navigate('/LoginCollaborateur');
         } else {
             const username = JSON.parse(localStorage.getItem('user')).username;
-            axios.get(http://localhost:8087/api/utilisateur/username/${username})
+            axios.get(`http://localhost:8087/api/utilisateur/username/${username}`)
                 .then(response => {
                     setUserData(response.data);
                 })
@@ -64,7 +64,7 @@ const ProfileCollaborateur = () => {
         e.preventDefault();
         const username = JSON.parse(localStorage.getItem('user')).username;
 
-        axios.put(http://localhost:8087/api/utilisateur/username/${username}, userData)
+        axios.put(`http://localhost:8087/api/utilisateur/username/${username}`, userData)
             .then(response => {
                 MySwal.fire('Succès', 'Profile mis à jour avec succès', 'success');
             })
@@ -82,10 +82,10 @@ const ProfileCollaborateur = () => {
         const token = localStorage.getItem('token');
         const username = JSON.parse(localStorage.getItem('user')).username;
         
-        axios.post(http://localhost:8087/api/utilisateur/upload/profile-image/${username}, formData, {
+        axios.post(`http://localhost:8087/api/utilisateur/upload/profile-image/${username}`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
-                'Authorization': Bearer ${token}
+                'Authorization': `Bearer ${token}`
             }
         })
         .then(response => {
@@ -147,16 +147,16 @@ const ProfileCollaborateur = () => {
                 const username = JSON.parse(localStorage.getItem('user')).username;
                 const token = localStorage.getItem('token'); // Get the token from localStorage
     
-                return axios.post(http://localhost:8087/api/utilisateur/validate-password/${username}, { currentPassword }, {
+                return axios.post(`http://localhost:8087/api/utilisateur/validate-password/${username}`, { currentPassword }, {
                     headers: {
-                        'Authorization': Bearer ${token} // Include the token in the headers
+                        'Authorization': `Bearer ${token}` // Include the token in the headers
                     }
                 })
                 .then(response => {
                     if (response.data.valid) {
-                        return axios.put(http://localhost:8087/api/utilisateur/change-password/${username}, { newPassword }, {
+                        return axios.put(`http://localhost:8087/api/utilisateur/change-password/${username}`, { newPassword }, {
                             headers: {
-                                'Authorization': Bearer ${token} // Include the token in the headers
+                                'Authorization': `Bearer ${token}` // Include the token in the headers
                             }
                         });
                     } else {
@@ -238,7 +238,7 @@ const ProfileCollaborateur = () => {
                                 width="100px"
                                 height="100px"
                                 style={{ borderRadius: '50%' }}
-                                src={userData.imageUrl ? http://localhost:8087/api/utilisateur/image/${userData.imageUrl} : imagepro}
+                                src={userData.imageUrl ? `http://localhost:8087/api/utilisateur/image/${userData.imageUrl}` : imagepro}
                                 alt="Profile"
                             />
                             <span className="font-weight-bold">{userData.nom} {userData.prenom}</span>

@@ -66,10 +66,10 @@ const Reservation = () => {
             showCloseButton: true,
         }).then(async (result) => {
             if (result.isConfirmed) {
-                await handleAccept(reservation.id_Reservation); 
+                await handleAccept(reservation.id); 
                 fetchOngoingMissions();
             } else if (result.dismiss === Swal.DismissReason.cancel) {
-                await handleReject(reservation.id_Reservation); // Passe l'ID de la réservation
+                await handleReject(reservation.id); // Passe l'ID de la réservation
                 fetchOngoingMissions();
             }
         });
@@ -118,11 +118,15 @@ const Reservation = () => {
                         
                         // Manually update the reservations state
                         setReservations((prevReservations) =>
-                            prevReservations.filter((reservation) => reservation.id_Reservation !== id)
+                            prevReservations.filter((reservation) => reservation.id !== id)
                         );
     
-                        // Alternatively, you can call fetchReservations again to refresh the data from the server
-                        // await fetchReservations(); 
+                    }
+                    try {
+                        const response = await axios.get('http://localhost:8087/api/reservations');
+                        setReservations(response.data);
+                    } catch (error) {
+                        console.error("Erreur lors de la récupération des réservations", error);
                     }
                 } catch (error) {
                     console.error("Erreur lors de la suppression de la réservation", error);
@@ -221,7 +225,7 @@ const Reservation = () => {
                                 {showCategories && (
                                    <ul>
                                    {ongoingMissions.map((reservation) => (
-                                       <li key={reservation.id_reservation} onClick={() => handleMissionClick(reservation)}>
+                                       <li key={reservation.id} onClick={() => handleMissionClick(reservation)}>
                                            <a href="#">{reservation.mission.titre}</a>
                                        </li>
                                    ))}
@@ -259,15 +263,15 @@ const Reservation = () => {
                                                     </thead>
                                                     <tbody>
                                                         {filteredReservations.map((reservation) => (
-                                                            <tr key={reservation.id_Reservation}>
+                                                            <tr key={reservation.id}>
                                                                 <td>{reservation.mission.titre}</td>
-                                                                <td>{reservation.collaborateur.nom}</td>
+                                                                <td>{reservation.collaborateur.nom} {reservation.collaborateur.prenom}</td>
                                                                 <td>{reservation.mission.vehicule.immatriculation}</td>
                                                                 <td>{reservation.statut === 1 ? 'Accepté' : reservation.statut === 0 ? 'Refusé' : 'En Attente'}</td>
                                                                 <td>
                                                                     <FaTrashAlt
                                                                         style={{ cursor: "pointer",fontSize: '18px', color: '#b2b2b2'  }}
-                                                                        onClick={() => handleDelete(reservation.id_Reservation)}
+                                                                        onClick={() => handleDelete(reservation.id)}
                                                                     />
                                                                 </td>
                                                             </tr>
