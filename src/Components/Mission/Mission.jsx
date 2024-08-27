@@ -77,7 +77,8 @@ const MyDocument = ({ mission }) => (
             <Text style={styles.title}>Rapport de Mission</Text>
             <View style={styles.section}>
                 <Text style={styles.paragraph}>
-                    Cette mission avait pour but de {mission.titre}. Elle a été menée du {mission.dateDebut} au {mission.dateFin} et a été relue par {mission.collaborateur.nom} {mission.collaborateur.prenom}.
+                    Cette mission avait pour but de {mission.titre}. Elle a été menée du {mission.dateDebut} au {mission.dateFin} et a été relue par {mission.collaborateur ? `${mission.collaborateur.nom || 'N/A'} ${mission.collaborateur.prenom || 'N/A'}`: 'Collaborateur pas disponible'}
+.
                 </Text>
                 <Text style={styles.paragraph}>
                     Au cours de cette mission, nous avons recueilli des données essentielles et analysé les processus en place. La mission a été effectuée à l'emplacement géographique suivant : longitude {mission.mission_longitude} et latitude {mission.mission_latitude}. Le véhicule utilisé pour cette mission était immatriculé {mission.vehicule.immatriculation}.
@@ -117,7 +118,7 @@ const Mission = () => {
         collaborateur: {id : ""},
         vehicule: {vehiculeId : ""},
         mission_longitude: '',
-        mission_latitude: ''
+        mission_latitude: '',
     });
     const [mission, setMission] = useState({
         dateDebut: '',
@@ -128,7 +129,7 @@ const Mission = () => {
         collaborateur: {id : ""},
         vehicule: {vehiculeId : ""},
         mission_longitude: '',
-        mission_latitude: ''
+        mission_latitude: '',
     });
     const handleLogout = () => {
         localStorage.removeItem('token');
@@ -303,15 +304,17 @@ const Mission = () => {
                 const date = new Date(dateString);
                 return date.toISOString().slice(0, 16); 
             };
+            const vehiculeId = mission.vehicule ? mission.vehicule.vehiculeId : null;
+            const collaborateurId = mission.collaborateur ? mission.collaborateur.id : null;
             setFormData({
                 ...mission,
                 dateDebut: formatDate(mission.dateDebut),
                 dateFin: formatDate(mission.dateFin),
-                vehicule: { vehiculeId: mission.vehicule.vehiculeId },
-                collaborateur: { id: mission.collaborateur.id}
+                vehicule: { vehiculeId: vehiculeId },
+                collaborateur: { id: collaborateurId }
             });
             setSelectedMission(mission);
-            setOldMatricule(mission.vehicule.vehiculeId);
+            setOldMatricule(vehiculeId);
         }
         setShowEditModal(!showEditModal);
     };
@@ -483,8 +486,8 @@ const Mission = () => {
                         <div className="col-lg-6">
                             <nav className="header__menu d-flex justify-content-center">
                                 <ul className="d-flex mb-0">
-                                    <li className="active"><a href="/Home">Home</a></li>
-                                    <li><a href="/Mission">Missions</a></li>
+                                    <li><a href="/Home">Home</a></li>
+                                    <li className="active"><a href="/Mission">Missions</a></li>
                                     <li><a href="/Collaborateur">Collaborateurs</a></li>
                                     <li><a href="/Vehicule">Vehicules</a></li>
                                     <li><a href="/Reservation">Reservation</a></li>
@@ -508,7 +511,7 @@ const Mission = () => {
                                         {showDropdown && (
                                             <ul className="dropdown-menu">
                                                 <li><a href="/Profile">Profile</a></li>
-                                                <li><a href="#" onClick={handleLogout}>Déconnexion</a></li>
+                                                <li><a onClick={handleLogout}>Déconnexion</a></li>
                                             </ul>
                                         )}
                                     </li>
@@ -552,7 +555,7 @@ const Mission = () => {
                                     </thead>
                                     <tbody>
                                     {missions.map(mission => (
-                                        <tr key={mission.id}>
+                                        <tr key={mission.id} style={{ backgroundColor: mission.statut === 1 ? '#edd4d4' : 'transparent' }}>
                                             <td className="shoping__cart__item">
                                                 <h5 name="nompre_collaborateur">{mission.titre}</h5>
                                             </td>
@@ -563,7 +566,12 @@ const Mission = () => {
                                             <td>{mission.mission_latitude}</td>
                                             <td>{mission.dateDebut}</td>
                                             <td>{mission.dateFin}</td>
-                                            <td>{mission.collaborateur.nom} {mission.collaborateur.prenom}</td>
+                                            <td>
+                                            {mission.collaborateur 
+                                                ? `${mission.collaborateur.nom || 'N/A'} ${mission.collaborateur.prenom || 'N/A'}`
+                                                : 'Collaborateur pas disponible'
+                                            }
+                                            </td>
                                             <td>{mission.vehicule.immatriculation}</td>
                                             <td className="shoping__cart__item__close">
                                                 <FaTrashAlt
@@ -708,7 +716,6 @@ const Mission = () => {
                                 name="collaborator"
                                 value={mission.id}
                                 onChange={handleCollaborateurChange}
-                                required
                             >
                                 <option value="">Choisir un Collaborateur</option>
                                 {collaborateurs.map(collaborateur => (
@@ -891,9 +898,15 @@ const Mission = () => {
                             <p><strong>Date Fin :</strong> {mission.dateFin}</p>
                             <p><strong>Latitude :</strong> {mission.mission_latitude}</p>
                             <p><strong>Longtitude :</strong> {mission.mission_longitude}</p>
-                            <p><strong>Statut :</strong> {mission.statut}</p>
+                            <p><strong>Statut :</strong> {mission.statut === 0 ? 'En cours de réalisation' :
+                                                     mission.statut === 1 ? 'Mission réalisée' :
+                                                     'Statut inconnu'}</p>
                             <p><strong>Matricule :</strong> {mission.vehicule.immatriculation}</p>
-                            <p><strong>Nom & Prenom du Collaborateur :</strong> {mission.collaborateur.nom} {mission.collaborateur.prenom}</p>
+                            <p><strong>Nom & Prenom du Collaborateur :</strong> 
+            {mission.collaborateur 
+                ? `${mission.collaborateur.nom || 'N/A'} ${mission.collaborateur.prenom || 'N/A'}`
+                : 'Collaborateur pas disponible'
+            }</p>
                         </div>
                     )}
                 </div>

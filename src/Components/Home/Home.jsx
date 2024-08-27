@@ -189,7 +189,10 @@ const Home = () => {
                                                 <strong>Description:</strong> {mission.description} <br />
                                                 <strong>Date Debut:</strong> {new Date(mission.dateDebut).toLocaleDateString()} <br />
                                                 <strong>Date Fin:</strong> {new Date(mission.dateFin).toLocaleDateString()} <br />
-                                                <strong>Collaborateur:</strong> {mission.collaborateur.nom} {mission.collaborateur.prenom} <br />
+                                                <strong>Collaborateur:</strong> {mission.collaborateur 
+                ? `${mission.collaborateur.nom || 'N/A'} ${mission.collaborateur.prenom || 'N/A'}`
+                : 'Collaborateur pas disponible'
+            } <br />
                                                 <strong>Matricule Véhicule:</strong> {mission.vehicule.immatriculation}
                                             </Popup>
                                         </Marker>
@@ -204,7 +207,10 @@ const Home = () => {
                                                 <strong>Description:</strong> {selectedMission.description} <br />
                                                 <strong>Date Debut:</strong> {new Date(selectedMission.dateDebut).toLocaleDateString()} <br />
                                                 <strong>Date Fin:</strong> {new Date(selectedMission.dateFin).toLocaleDateString()} <br />
-                                                <strong>Collaborateur:</strong> {selectedMission.collaborateur.nom} {selectedMission.collaborateur.prenom} <br />
+                                                <strong>Collaborateur:</strong> {selectedMission.collaborateur 
+                ? `${selectedMission.collaborateur.nom || 'N/A'} ${selectedMission.collaborateur.prenom || 'N/A'}`
+                : 'Collaborateur pas disponible'
+            } <br />
                                                 <strong>Matricule Véhicule:</strong> {selectedMission.vehicule.immatriculation}
                                             </div>
                                         </Popup>

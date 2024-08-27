@@ -249,10 +249,10 @@ const [searchQuery, setSearchQuery] = useState("");
                         <div className="col-lg-6">
                             <nav className="header__menu d-flex justify-content-center">
                                 <ul className="d-flex mb-0">
-                                    <li className="active"><a href="/Home">Home</a></li>
+                                    <li><a href="/Home">Home</a></li>
                                     <li><a href="/Mission">Missions</a></li>
                                     <li><a href="/Collaborateur">Collaborateurs</a></li>
-                                    <li><a href="/Vehicule">Vehicules</a></li>
+                                    <li className="active"><a href="/Vehicule">Vehicules</a></li>
                                     <li><a href="/Reservation">Reservation</a></li>
                                 </ul>
                             </nav>

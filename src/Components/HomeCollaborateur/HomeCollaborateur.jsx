@@ -30,7 +30,7 @@ const HomeCollaborateur = () => {
             navigate('/LoginCollaborateur');
         } else {
             const id = JSON.parse(localStorage.getItem('user')).id;
-            axios.get(http://localhost:8087/api/missions/collaborateur/${id})
+            axios.get(`http://localhost:8087/api/missions/collaborateur/${id}`)
                 .then(response => {
                     setMissions(response.data);
                 })
@@ -53,6 +53,21 @@ const HomeCollaborateur = () => {
 
     const toggleDropdown = () => {
         setShowDropdown(!showDropdown);
+    };
+
+    const markAsCompleted = (id) => {
+        axios.put(`http://localhost:8087/api/missions/${id}/statut`, null, { params: { statut: 1 } })
+            .then(response => {
+                // Update the status locally
+                setMissions(missions.map(mission =>
+                    mission.id === id ? { ...mission, statut: 1 } : mission
+                ));
+                Swal.fire('Success', 'Mission marked as completed.', 'success');
+            })
+            .catch(err => {
+                console.error(err);
+                Swal.fire('Error', 'Failed to update mission status.', 'error');
+            });
     };
 
     return (
@@ -101,7 +116,7 @@ const HomeCollaborateur = () => {
                 </div>
             </header>
 
-            <section className="breadcrumb-section" style={{ backgroundImage: url(${OCPHISTO}), backgroundSize: 'cover', backgroundPosition: 'center' }}>
+            <section className="breadcrumb-section" style={{ backgroundImage: `url(${OCPHISTO})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
                 <div className="container">
                     <div className="row">
                         <div className="col-lg-12 text-center">
@@ -117,8 +132,8 @@ const HomeCollaborateur = () => {
                 <div className="container">
                     <div className="row">
                         <div className="col-lg-12">
-                            <div className="shoping_carttable_Mission-container">
-                                <table className="shoping_carttable_Mission">
+                            <div className="shoping__cart__table__Mission-container">
+                                <table className="shoping__cart__table__Mission">
                                     <thead>
                                         <tr>
                                             <th>Titre</th>
@@ -140,13 +155,25 @@ const HomeCollaborateur = () => {
                                                 <td>{mission.mission_latitude}</td>
                                                 <td>{mission.dateDebut}</td>
                                                 <td>{mission.dateFin}</td>
-                                                <td>{mission.statut}</td>
+                                                <td>
+                                                    {mission.statut === 0 ? 'En cours de réalisation' :
+                                                     mission.statut === 1 ? 'Mission réalisée' :
+                                                     'Statut inconnu'}
+                                                </td>
                                                 <td>
                                                     <TbListDetails
                                                         style={{ cursor: 'pointer', fontSize: '18px', color: '#b2b2b2' }}
                                                         onClick={() => toggleDetailsPopup(mission)}
                                                     />
-                                                    <button className="btn btn-success" style={{ marginLeft: '5px', padding: '4px 8px', fontSize: '9px' }}>Mission Realiser</button>
+                                                    {mission.statut === 0 && (
+                                                        <button 
+                                                            className="btn btn-success" 
+                                                            style={{ marginLeft: '5px', padding: '4px 8px', fontSize: '9px' }}
+                                                            onClick={() => markAsCompleted(mission.id)}
+                                                        >
+                                                            Mission Realiser
+                                                        </button>
+                                                    )}
                                                 </td>
                                             </tr>
                                         ))}
@@ -173,7 +200,7 @@ const HomeCollaborateur = () => {
                                     <p><strong>Date Fin :</strong> {selectedMission.dateFin}</p>
                                     <p><strong>Latitude :</strong> {selectedMission.mission_latitude}</p>
                                     <p><strong>Longitude :</strong> {selectedMission.mission_longitude}</p>
-                                    <p><strong>Statut :</strong> {selectedMission.statut}</p>
+                                    <p><strong>Statut :</strong> {selectedMission.statut === 0 ? 'En cours de réalisation' : selectedMission.statut === 1 ? 'Mission réalisée' : 'Statut inconnu'}</p>
                                     <p><strong>Matricule :</strong> {selectedMission.vehicule.immatriculation}</p>
                                     <p><strong>Nom & Prenom du Collaborateur :</strong> {selectedMission.collaborateur.nom} {selectedMission.collaborateur.prenom}</p>
                                 </div>
