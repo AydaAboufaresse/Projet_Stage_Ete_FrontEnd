@@ -30,7 +30,7 @@ const HomeCollaborateur = () => {
             navigate('/LoginCollaborateur');
         } else {
             const id = JSON.parse(localStorage.getItem('user')).id;
-            axios.get(http://localhost:8087/api/missions/collaborateur/${id})
+            axios.get(`http://localhost:8087/api/missions/collaborateur/${id}`)
                 .then(response => {
                     setMissions(response.data);
                 })
@@ -101,7 +101,7 @@ const HomeCollaborateur = () => {
                 </div>
             </header>
 
-            <section className="breadcrumb-section" style={{ backgroundImage: url(${OCPHISTO}), backgroundSize: 'cover', backgroundPosition: 'center' }}>
+            <section className="breadcrumb-section" style={{ backgroundImage: `url(${OCPHISTO})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
                 <div className="container">
                     <div className="row">
                         <div className="col-lg-12 text-center">
@@ -117,8 +117,8 @@ const HomeCollaborateur = () => {
                 <div className="container">
                     <div className="row">
                         <div className="col-lg-12">
-                            <div className="shoping_carttable_Mission-container">
-                                <table className="shoping_carttable_Mission">
+                            <div className="shoping__cart__table__Mission-container">
+                                <table className="shoping__cart__table__Mission">
                                     <thead>
                                         <tr>
                                             <th>Titre</th>
