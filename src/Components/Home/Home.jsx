@@ -175,7 +175,7 @@ const Home = () => {
                                     <ul>
                                         {missions.map(mission => (
                                             <li key={mission.id} onClick={() => handleMissionClick(mission)}>
-                                                <a href="#">{mission.description}</a> 
+                                                <a href="#">{mission.titre}</a> 
                                             </li>
                                         ))}
                                     </ul>
@@ -227,7 +227,7 @@ const Home = () => {
                                                 <strong>Description:</strong> {mission.description} <br />
                                                 <strong>Date Debut:</strong> {new Date(mission.dateDebut).toLocaleDateString()} <br />
                                                 <strong>Date Fin:</strong> {new Date(mission.dateFin).toLocaleDateString()} <br />
-                                                <strong>Collaborateur:</strong>{mission.collaborateur ? ${mission.collaborateur.nom || 'N/A'} ${mission.collaborateur.prenom || 'N/A'} : 'Collaborateur pas disponible'} <br />
+                                                <strong>Collaborateur:</strong>{mission.collaborateur ? `${mission.collaborateur.nom || 'N/A'} ${mission.collaborateur.prenom || 'N/A'}`: 'Collaborateur pas disponible'} <br />
                                                 <strong>Matricule Véhicule:</strong> {mission.vehicule.immatriculation}
                                             </Popup>
                                         </Marker>

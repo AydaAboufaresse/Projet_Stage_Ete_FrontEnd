@@ -36,7 +36,41 @@ const ReservationMission = () => {
         localStorage.removeItem('user');
         navigate("/LoginCollaborateur");
     };
-
+    useEffect(() => {
+        if (showDetailsPopup && selectedMission) {
+            const L = require('leaflet');
+            const map = L.map('map').setView([selectedMission.mission_latitude, selectedMission.mission_longitude], 13);
+    
+            // Add tile layer
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+    
+            // Add marker for the mission location
+            const missionMarker = L.marker([selectedMission.mission_latitude, selectedMission.mission_longitude])
+                .addTo(map)
+                .bindPopup(`<b>${selectedMission.titre}</b><br>Latitude: ${selectedMission.mission_latitude}<br>Longitude: ${selectedMission.mission_longitude}`)
+                .openPopup();
+    
+            // Add routing control using leaflet-routing-machine
+            const routingControl = L.Routing.control({
+                waypoints: [
+                    L.latLng(32.232157, -9.252964), // Starting point (e.g., a fixed point or user location)
+                    L.latLng(selectedMission.mission_latitude, selectedMission.mission_longitude) // Mission location
+                ],
+                routeWhileDragging: true, // Allow dragging of routes
+                draggableWaypoints: false, // Prevent dragging waypoints
+                showAlternatives: false ,
+                show: false
+            }).addTo(map);
+    
+            // Cleanup function to remove the map instance when modal is closed
+            return () => {
+                map.remove(); // Remove map instance to prevent memory leaks
+            };
+        }
+    }, [showDetailsPopup, selectedMission]);
+    
     // Fetch missions and collaborator ID
     useEffect(() => {
         const fetchData = async () => {
@@ -220,14 +254,14 @@ const ReservationMission = () => {
                                         <p><strong>Description :</strong> {selectedMission.description}</p>
                                         <p><strong>Date Début :</strong> {moment(selectedMission.dateDebut).format('DD/MM/YYYY HH:mm')}</p>
                                         <p><strong>Date Fin :</strong> {moment(selectedMission.dateFin).format('DD/MM/YYYY HH:mm')}</p>
-                                        <p><strong>Latitude :</strong> {selectedMission.mission_latitude}</p>
-                                        <p><strong>Longitude :</strong> {selectedMission.mission_longitude}</p>
+                                        
                                         <p><strong>Statut :</strong> {selectedMission.statut}</p>
                                         <p><strong>Matricule :</strong> {selectedMission.vehicule.immatriculation}</p>
                                         <p><strong>Nom & Prénom du Collaborateur :</strong> {selectedMission.collaborateur 
                 ? `${selectedMission.collaborateur.nom || 'N/A'} ${selectedMission.collaborateur.prenom || 'N/A'}`
                 : 'Collaborateur pas disponible'
             }</p>
+                                   <div id="map" style={{ height: '300px', marginTop: '20px' }}></div>
                                     </div>
                                 )}
                             </div>

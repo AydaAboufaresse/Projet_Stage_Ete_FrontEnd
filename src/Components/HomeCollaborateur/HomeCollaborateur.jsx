@@ -7,6 +7,7 @@ import avatar from '../Assets/pro.png';
 import OCPHISTO from '../Assets/OCP_history.jpg';
 import { FaFilePdf } from "react-icons/fa6";
 import { TbListDetails } from 'react-icons/tb';
+import './HomeCollaborateur.css';
 import moment from 'moment';
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -16,6 +17,7 @@ import axios from 'axios';
 import Swal from 'sweetalert2';
 import { BASEURL, saveMission, updateMission, deleteMission, getAllMissions } from '../axios/missionRequests';
 import { useNavigate } from "react-router-dom";
+
 
 const HomeCollaborateur = () => {
     const [showDropdown, setShowDropdown] = useState(false);
@@ -39,6 +41,42 @@ const HomeCollaborateur = () => {
                 });
         }
     }, [navigate]);
+    useEffect(() => {
+        if (showDetailsPopup && selectedMission) {
+            const L = require('leaflet');
+            const map = L.map('map').setView([selectedMission.mission_latitude, selectedMission.mission_longitude], 13);
+    
+            // Add tile layer
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+    
+            // Add marker for the mission location
+            const missionMarker = L.marker([selectedMission.mission_latitude, selectedMission.mission_longitude])
+                .addTo(map)
+                .bindPopup(`<b>${selectedMission.titre}</b><br>Latitude: ${selectedMission.mission_latitude}<br>Longitude: ${selectedMission.mission_longitude}`)
+                .openPopup();
+    
+            // Add routing control using leaflet-routing-machine
+            const routingControl = L.Routing.control({
+                waypoints: [
+                    L.latLng(32.232157, -9.252964), // Starting point (e.g., a fixed point or user location)
+                    L.latLng(selectedMission.mission_latitude, selectedMission.mission_longitude) // Mission location
+                ],
+                routeWhileDragging: true, // Allow dragging of routes
+                draggableWaypoints: false, // Prevent dragging waypoints
+                showAlternatives: false ,
+                show: false
+            }).addTo(map);
+    
+            // Cleanup function to remove the map instance when modal is closed
+            return () => {
+                map.remove(); // Remove map instance to prevent memory leaks
+            };
+        }
+    }, [showDetailsPopup, selectedMission]);
+    
+    
 
     const handleLogout = () => {
         localStorage.removeItem('token');
@@ -198,11 +236,11 @@ const HomeCollaborateur = () => {
                                     <p><strong>Description :</strong> {selectedMission.description}</p>
                                     <p><strong>Date Debut :</strong> {selectedMission.dateDebut}</p>
                                     <p><strong>Date Fin :</strong> {selectedMission.dateFin}</p>
-                                    <p><strong>Latitude :</strong> {selectedMission.mission_latitude}</p>
-                                    <p><strong>Longitude :</strong> {selectedMission.mission_longitude}</p>
+                                    
                                     <p><strong>Statut :</strong> {selectedMission.statut === 0 ? 'En cours de réalisation' : selectedMission.statut === 1 ? 'Mission réalisée' : 'Statut inconnu'}</p>
                                     <p><strong>Matricule :</strong> {selectedMission.vehicule.immatriculation}</p>
                                     <p><strong>Nom & Prenom du Collaborateur :</strong> {selectedMission.collaborateur.nom} {selectedMission.collaborateur.prenom}</p>
+                                    <div id="map" style={{ height: '300px', marginTop: '20px' }}></div>
                                 </div>
                             </div>
                             <div className="modal-footer">

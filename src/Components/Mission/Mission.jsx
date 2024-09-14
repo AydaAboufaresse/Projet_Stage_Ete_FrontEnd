@@ -151,6 +151,19 @@ const Mission = () => {
     }, []);
     
     useEffect(() => {
+        if (showDetailsPopup && mission) {
+            const L = require('leaflet');
+            const map = L.map('map').setView([mission.mission_latitude, mission.mission_longitude], 13);
+    
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+    
+            L.marker([mission.mission_latitude, mission.mission_longitude]).addTo(map)
+                .bindPopup(`<b>${mission.titre}</b><br>Latitude: ${mission.mission_latitude}<br>Longitude: ${mission.mission_longitude}`).openPopup();
+        }
+    }, [showDetailsPopup, mission]);
+    useEffect(() => {
         async function fetchCollaborateurs() {
             try {
                 const response = await fetch("http://localhost:8087/api/collaborateur/");
@@ -896,8 +909,6 @@ const Mission = () => {
                             <p><strong>Description :</strong> {mission.description}</p>
                             <p><strong>Date Debut :</strong> {mission.dateDebut}</p>
                             <p><strong>Date Fin :</strong> {mission.dateFin}</p>
-                            <p><strong>Latitude :</strong> {mission.mission_latitude}</p>
-                            <p><strong>Longtitude :</strong> {mission.mission_longitude}</p>
                             <p><strong>Statut :</strong> {mission.statut === 0 ? 'En cours de réalisation' :
                                                      mission.statut === 1 ? 'Mission réalisée' :
                                                      'Statut inconnu'}</p>
@@ -907,6 +918,7 @@ const Mission = () => {
                 ? `${mission.collaborateur.nom || 'N/A'} ${mission.collaborateur.prenom || 'N/A'}`
                 : 'Collaborateur pas disponible'
             }</p>
+            <div id="map" style={{ height: '300px', marginTop: '20px' }}></div>
                         </div>
                     )}
                 </div>
